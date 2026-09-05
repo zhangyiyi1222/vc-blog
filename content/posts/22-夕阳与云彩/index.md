@@ -2,7 +2,7 @@
 title: "夕阳与云彩"
 date: 2013-06-26T00:00:00+08:00
 categories:
-  - 妈妈的记录
+  - 家人
 draft: false
 ---
 

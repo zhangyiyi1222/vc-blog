@@ -2,7 +2,7 @@
 title: "摘抄与随感"
 date: 2026-04-01T09:00:00+08:00
 categories:
-  - 妈妈的记录
+  - 家人
 draft: false
 ---
 （日期待确认）

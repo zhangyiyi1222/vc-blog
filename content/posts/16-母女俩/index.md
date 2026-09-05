@@ -2,7 +2,7 @@
 title: "母女俩"
 date: 2013-03-17T00:00:00+08:00
 categories:
-  - 妈妈的记录
+  - 家人
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: "不经意间的伤"
 date: 2012-11-15T00:00:00+08:00
 categories:
-  - 妈妈的记录
+  - 家人
 draft: false
 ---
 

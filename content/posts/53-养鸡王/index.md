@@ -2,7 +2,7 @@
 title: "养鸡王"
 date: 2026-06-15T09:00:00+08:00
 categories:
-  - 妈妈的记录
+  - 家人
 draft: false
 ---
 （日期待确认）
