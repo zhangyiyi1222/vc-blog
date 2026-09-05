@@ -1,7 +1,8 @@
 ---
 title: "走了"
 date: 2026-01-16T09:00:00+08:00
-categories: ["妈妈的声音"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 （日期待确认）

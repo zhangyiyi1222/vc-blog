@@ -1,7 +1,8 @@
 ---
 title: "暂且不谈别的好与坏"
 date: 2026-03-22T09:00:00+08:00
-categories: ["妈妈的文字"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 （日期待确认）

@@ -1,7 +1,8 @@
 ---
 title: "父母的福与孝"
 date: 2013-08-03T00:00:00+08:00
-categories: ["妈的说说"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 

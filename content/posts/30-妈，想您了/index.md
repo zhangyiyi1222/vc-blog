@@ -1,7 +1,8 @@
 ---
 title: "妈，想您了"
 date: 2021-01-06T00:00:00+08:00
-categories: ["我们的聊天"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 

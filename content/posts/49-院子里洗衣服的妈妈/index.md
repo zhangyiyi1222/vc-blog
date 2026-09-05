@@ -1,7 +1,8 @@
 ---
 title: "院子里洗衣服的妈妈"
 date: 2026-05-26T09:00:00+08:00
-categories: ["照片"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 （日期待确认）

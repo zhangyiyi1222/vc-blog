@@ -1,7 +1,8 @@
 ---
 title: "妈妈的公众号“鸟巢”"
 date: 2026-06-20T09:00:00+08:00
-categories: ["照片"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 （日期待确认）

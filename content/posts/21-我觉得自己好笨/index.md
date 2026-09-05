@@ -1,7 +1,8 @@
 ---
 title: "我觉得自己好笨"
 date: 2014-02-19T00:00:00+08:00
-categories: ["妈的说说"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 

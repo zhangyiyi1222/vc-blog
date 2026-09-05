@@ -1,7 +1,8 @@
 ---
 title: "爸爸的钱和妈妈的爱"
 date: 2026-02-15T09:00:00+08:00
-categories: ["我们的聊天"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 （日期待确认）

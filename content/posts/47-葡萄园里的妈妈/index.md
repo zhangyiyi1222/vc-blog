@@ -1,7 +1,8 @@
 ---
 title: "葡萄园里的妈妈"
 date: 2026-05-16T09:00:00+08:00
-categories: ["照片"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 （日期待确认）

@@ -1,7 +1,8 @@
 ---
 title: "学会宽恕"
 date: 2012-05-15T00:00:00+08:00
-categories: ["妈的说说"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 

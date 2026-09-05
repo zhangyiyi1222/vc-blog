@@ -1,7 +1,8 @@
 ---
 title: "猫的照片"
 date: 2026-09-06T12:00:00+08:00
-categories: ["生活片段"]
+categories:
+  - 随笔
 draft: false
 ---
 今天拍到一只猫。

@@ -1,7 +1,8 @@
 ---
 title: "院子里的微笑"
 date: 2026-06-05T09:00:00+08:00
-categories: ["照片"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 （日期待确认）

@@ -1,7 +1,8 @@
 ---
 title: "与人良善终得福报"
 date: 2014-02-02T00:00:00+08:00
-categories: ["妈的说说"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 

@@ -1,7 +1,8 @@
 ---
 title: "妈妈的手写简历"
 date: 2026-02-05T09:00:00+08:00
-categories: ["妈妈的文字"]
+categories:
+  - 妈妈的记录
 draft: false
 ---
 （日期待确认）
