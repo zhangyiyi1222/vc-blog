@@ -2,7 +2,7 @@
 title: "冬日的暖阳"
 date: 2026-04-06T09:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 （日期待确认）

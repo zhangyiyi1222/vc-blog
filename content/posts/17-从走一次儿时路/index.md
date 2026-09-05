@@ -2,7 +2,7 @@
 title: "从走一次儿时路"
 date: 2014-02-14T00:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: "脚不疼真好"
 date: 2014-02-23T00:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 

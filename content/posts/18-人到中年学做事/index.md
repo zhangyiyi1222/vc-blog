@@ -2,7 +2,7 @@
 title: "人到中年学做事"
 date: 2014-02-24T00:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 

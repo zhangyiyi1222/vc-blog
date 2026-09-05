@@ -2,7 +2,7 @@
 title: "妈妈的手写简历"
 date: 2026-02-05T09:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 （日期待确认）

@@ -2,7 +2,7 @@
 title: "豹纹上衣的妈妈"
 date: 2026-04-26T09:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 （日期待确认）

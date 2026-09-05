@@ -2,7 +2,7 @@
 title: "决定"
 date: 2026-06-25T09:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 （日期待确认）

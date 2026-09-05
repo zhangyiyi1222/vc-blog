@@ -2,7 +2,7 @@
 title: "不经意间的伤"
 date: 2012-11-15T00:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 

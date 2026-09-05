@@ -2,7 +2,7 @@
 title: "夕阳与云彩"
 date: 2013-06-26T00:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 

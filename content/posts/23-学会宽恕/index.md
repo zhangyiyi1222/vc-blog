@@ -2,7 +2,7 @@
 title: "学会宽恕"
 date: 2012-05-15T00:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 

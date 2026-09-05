@@ -2,7 +2,7 @@
 title: "家里的两只鸟"
 date: 2013-11-29T00:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 

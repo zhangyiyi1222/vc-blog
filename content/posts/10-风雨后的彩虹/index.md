@@ -2,7 +2,7 @@
 title: "风雨后的彩虹"
 date: 2013-05-23T00:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 

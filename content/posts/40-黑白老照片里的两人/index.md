@@ -2,7 +2,7 @@
 title: "黑白老照片里的两人"
 date: 2026-04-11T09:00:00+08:00
 categories:
-  - 家人
+  - 亲
 draft: false
 ---
 （日期待确认）
