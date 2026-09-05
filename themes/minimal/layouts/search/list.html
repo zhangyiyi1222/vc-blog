@@ -1,0 +1,19 @@
+{{ define "title" }}搜索 · {{ site.Title }}{{ end }}
+{{ define "pagehead" }}
+<header class="page-head container">
+  <h1 class="page-title">搜索</h1>
+</header>
+{{ end }}
+{{ define "main" }}
+<section class="search-page">
+  <div class="search-box" id="search-box" data-index-url="{{ "index.json" | relURL }}">
+    <input type="search" id="search-input" placeholder="输入关键词，找一找旧文章…" autocomplete="off" aria-label="搜索文章">
+    <p class="search-status" id="search-status"></p>
+    <ul class="search-results" id="search-results"></ul>
+  </div>
+</section>
+{{ end }}
+{{ define "footer" }}
+<script src="{{ "js/fuse.min.js" | relURL }}" defer></script>
+<script src="{{ "js/search.js" | relURL }}" defer></script>
+{{ end }}

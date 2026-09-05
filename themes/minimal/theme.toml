@@ -1,0 +1,6 @@
+name = "minimal"
+license = "MIT"
+licenselink = "https://opensource.org/licenses/MIT"
+description = "为纯中文个人博客设计的极简主题，参考 yihui.org 风格"
+min_version = "0.120.0"
+tags = ["blog", "minimal", "chinese"]

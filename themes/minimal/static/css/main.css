@@ -1,0 +1,1011 @@
+/* ============================================================
+   minimal —— 参考 yihui.org 的极简中文博客样式
+   配色 / 字体 / 间距均按需求实现，可在这里自行微调
+   ============================================================ */
+
+/* 中文宋体：优先用本机已安装的思源宋体/Noto，否则加载内置子集字体 */
+@font-face {
+  font-family: "BlogSerifCN";
+  src: local("Source Han Serif CN"), local("Source Han Serif SC"),
+    local("Source Han Serif TC"), local("Source Han Serif"),
+    local("Noto Serif CJK SC"), local("Songti SC"), local("SimSong"),
+    url("../fonts/SourceHanSerifCN-Regular.woff2") format("woff2");
+  font-display: swap;
+  unicode-range: U+4E00-9FFF, U+2014, U+2018-2019, U+201C-201D, U+2026, U+3001-3002,
+    U+300A-300B, U+3010-3011, U+30FB, U+FF01, U+FF08-FF09, U+FF0C, U+FF1A-FF1B, U+FF1F;
+}
+
+/* 楷体：用于引用块 */
+@font-face {
+  font-family: "BlogKaiCN";
+  src: local("Kaiti"), local("Kaiti SC"), local("STKaiti"), local("楷体"), local("SimKai"),
+    local("DFKai-SB"), url("../fonts/gkai00mp.woff2") format("woff2");
+  font-display: swap;
+  unicode-range: U+4E00-9FFF, U+2014, U+2018-2019, U+201C-201D, U+2026, U+3001-3002,
+    U+300A-300B, U+3010-3011, U+30FB, U+FF01, U+FF08-FF09, U+FF0C, U+FF1A-FF1B, U+FF1F;
+}
+
+:root {
+  --bg: #ffffff;
+  --text: #333333;
+  --muted: #999999;
+  --title: #000000;
+  --border: #eeeeee;
+  --soft: #f7f7f7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* 与参考站一致：标题默认加粗，更有分量 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  /* 与参考站一致：英文 Palatino + 中文思源宋体 */
+  /* 与参考站一致：中文思源宋体在前，英文自动落到 Palatino */
+  font-family: "BlogSerifCN", Palatino, "Palatino Linotype",
+    "Palatino LT STD", "Latin Modern Roman", serif;
+  font-size: 16px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 页面最宽 992px；正文区域约 620px */
+.container {
+  max-width: 992px;
+  margin-inline: auto;
+  padding-inline: 32px;
+  width: 100%;
+}
+
+.main.container {
+  margin-block: 56px 96px;
+  min-height: 56vh;
+}
+
+/* 正文自动撑满，页脚贴底 */
+.main.container {
+  flex: 1 0 auto;
+}
+
+/* 列表/归档页与顶栏同宽；单篇文章/关于页收窄为 620px 居中 */
+.main-narrow {
+  max-width: 620px;
+  padding-inline: 0;
+}
+a {
+  color: var(--title);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--title);
+  text-decoration: underline;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== 顶栏 ===== */
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-top: 36px;
+  position: relative;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 18px;
+}
+
+/* 页眉顶部两角：左上 + 右上，中间无线 */
+.head-corner {
+  position: absolute;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.head-corner::before,
+.head-corner::after {
+  content: "";
+  position: absolute;
+  background: #000000;
+}
+
+.hc-tl { left: 32px; }
+.hc-tl::before { top: 0; left: 0; width: 16px; height: 1px; }
+.hc-tl::after { top: 0; left: 0; width: 1px; height: 16px; }
+
+.hc-tr { right: 32px; }
+.hc-tr::before { top: 0; right: 0; width: 16px; height: 1px; }
+.hc-tr::after { top: 0; right: 0; width: 1px; height: 16px; }
+
+.site-brand {
+  font-size: 1.1rem;
+  color: var(--title);
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* 顶栏只留一张图做“logo”，文字名隐藏（参考谢益辉风格） */
+.site-brand-name {
+  display: none;
+}
+
+.site-brand:hover {
+  text-decoration: none;
+}
+
+.site-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.10);
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 0.2rem 1.4rem;
+}
+
+/* 顶栏右侧组（导航 + 日/夜按钮） */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.theme-toggle {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid #dcd8d0;
+  background: #faf9f6;
+  color: #6f6a61;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.theme-toggle:hover {
+  border-color: #aaa49a;
+  background: #f2efe9;
+}
+
+.nav-link {
+  color: #333333;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: var(--title);
+}
+
+.nav-link.active {
+  color: var(--title);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ===== 通用页面标题 ===== */
+/* 页面大标题统一放顶栏下方的通栏，左对齐 */
+.page-head {
+  padding-top: 34px;
+}
+
+.page-head + .main {
+  margin-top: 26px;
+}
+
+.page-title {
+  color: var(--title);
+  font-size: 1.75rem;
+  text-align: left;
+  margin: 0 0 0.4em;
+}
+
+.page-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: left;
+  margin: 0 0 2.2em;
+}
+
+/* ===== 首页 / 分类文章列表 ===== */
+/* 首页开场白：保持适度宽度，不与长列表混在一起 */
+.home-intro {
+  max-width: 620px;
+  color: #555555;
+  margin: 0 0 2.6em;
+}
+
+/* 首页照片藤蔓：按年份分相册，网格自动响应 */
+.photo-vine {
+  margin: 0;
+}
+
+.photo-album {
+  margin-bottom: 3em;
+}
+
+.photo-year {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #888888;
+  margin: 0 0 0.9em;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.photo-cell {
+  display: block;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: #f4f4f4;
+}
+
+.photo-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-cell:hover img {
+  opacity: 0.88;
+}
+
+/* 首页封面 */
+.home-cover {
+  text-align: center;
+  padding: 9vh 0 11vh;
+}
+
+.home-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.home-hello {
+  margin: 1.2em 0 0.4em;
+  font-size: 1.7rem;
+}
+
+.home-tagline {
+  margin: 0 0 1.4em;
+  color: #777777;
+}
+
+.home-nav a {
+  margin-inline: 0.5em;
+}
+
+/* 首页“晾晒”小相框 */
+.laundry {
+  margin-top: -1.5rem;
+  padding-bottom: 1rem;
+}
+
+.laundry-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.laundry-frame {
+  flex: 0 0 auto;
+  width: 84px;
+  padding: 4px 4px 8px;
+  background: #ffffff;
+  border: 1px solid #e6e1d8;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+  text-decoration: none;
+  transform-origin: top center;
+  animation: laundry-swing 5s ease-in-out infinite;
+}
+
+.laundry-frame:nth-child(odd) { animation-delay: 0.6s; }
+.laundry-frame:nth-child(3n) { animation-delay: 1.4s; }
+.laundry-frame:nth-child(4n) { animation-delay: 2.1s; }
+
+@keyframes laundry-swing {
+  0%, 100% { transform: rotate(-1.8deg); }
+  50% { transform: rotate(1.8deg); }
+}
+
+.laundry-frame img {
+  display: block;
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+}
+
+/* 首页“今日一篇” */
+.featured-post {
+  max-width: 620px;
+  margin: 0 auto 3em;
+  padding: 1.4em 1.6em 1.1em;
+  border: 1px solid #e7e3dc;
+  background: #faf9f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.featured-kicker {
+  margin: 0 0 0.7em;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.featured-title {
+  margin: 0 0 0.5em;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.featured-excerpt {
+  margin: 0 0 0.8em;
+  color: #555555;
+}
+
+.featured-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+#featured-next {
+  font: inherit;
+  color: #777777;
+  background: none;
+  border: 1px solid #dddddd;
+  padding: 0.25em 0.9em;
+  cursor: pointer;
+}
+
+#featured-next:hover {
+  color: var(--title);
+  border-color: #999999;
+}
+
+.post-list {
+  border-top: 1px solid var(--border);
+}
+
+.post-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.post-row .post-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.post-row .post-title a {
+  color: var(--title);
+}
+
+.post-date {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.row-byline {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.row-byline .author + .post-date::before {
+  content: "·";
+  margin: 0 0.55em;
+  color: #cccccc;
+}
+
+/* 首页最近文章：紧凑流水式，桌面一行多个，窄屏自动换行 */
+.home-section .post-list {
+  border-top: 0;
+}
+
+.home-section .post-row {
+  display: inline-block;
+  margin: 0 1.8em 0.5em 0;
+  padding: 0;
+  border-bottom: 0;
+}
+
+.home-section .post-row .post-title {
+  display: inline;
+  font-size: 1rem;
+}
+
+.home-section .post-date {
+  margin-left: 0.55em;
+}
+
+.more-link {
+  margin-top: 1.8em;
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.empty-tip {
+  color: var(--muted);
+  text-align: center;
+  margin-top: 3em;
+}
+
+/* ===== 日志归档：按年份分组 ===== */
+/* 月份分块：标题小且浅，块之间留出空间 */
+.archive-month {
+  margin-bottom: 1.1em;
+}
+
+.archive-month-title {
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: #777777;
+  margin: 0 0 0.4em;
+}
+
+/* 紧凑排列：条目像流水一样挨着，桌面一行多个，窄屏自动换行 */
+.archive-year {
+  margin-bottom: 2.2em;
+}
+
+.archive-year-title {
+  font-size: 1.25rem;
+  color: var(--title);
+  font-weight: 400;
+  margin: 0 0 0.9em;
+}
+
+.archive-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.archive-item {
+  display: inline-block;
+  margin: 0 0.8em 0.2em 0;
+  vertical-align: baseline;
+}
+
+.archive-date {
+  color: var(--muted);
+  font-size: 0.85em;
+  margin-right: 0.15em;
+}
+
+.archive-title {
+  color: var(--title);
+  font-size: 0.95em;
+}
+
+/* ===== 分类目录 ===== */
+.taxonomy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.taxonomy-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.taxonomy-count {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ===== 文章页 ===== */
+.post-single-title {
+  color: var(--title);
+  font-size: 1.75rem;
+  line-height: 1.45;
+  text-align: left;
+  margin: 0;
+}
+
+/* 元信息行：作者 / 日期 在左，分类在右（参考 yihui.org） */
+.post-header {
+  text-align: left;
+  margin-bottom: 1.8em;
+}
+
+.meta-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  margin-top: 0.9em;
+  color: #666666;
+  font-size: 0.9em;
+  text-align: left;
+}
+
+.author + .date::before {
+  content: " / ";
+  margin: 0 0.35em;
+  color: #c0c0c0;
+}
+
+.meta-right a {
+  color: #888888;
+  margin-left: 0.7em;
+}
+
+.meta-right a:hover {
+  color: var(--title);
+}
+
+/* 自动目录：浅灰底，像书前目录 */
+.toc {
+  background: #f6f5f1;
+  padding: 0.7em 1.1em;
+  margin: 0 0 2.4em;
+  font-size: 0.9em;
+}
+
+.toc nav > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc ul {
+  margin: 0.25em 0;
+  padding-left: 1.2em;
+}
+
+.toc li {
+  margin: 0.15em 0;
+}
+
+.toc a {
+  color: #555555;
+}
+
+.toc a:hover {
+  color: var(--title);
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose p {
+  margin: 1.25em 0;
+}
+
+.prose h2 {
+  color: var(--title);
+  font-size: 1.15rem;
+  margin: 2em 0 0.6em;
+  text-align: center;
+}
+
+.prose h3 {
+  color: var(--title);
+  font-size: 1.12rem;
+  margin: 1.8em 0 0.5em;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.6em;
+}
+
+.prose li {
+  margin: 0.35em 0;
+}
+
+/* 引用块：左侧 3px 灰竖线 + 浅灰背景 + 楷体 */
+.prose blockquote {
+  margin: 1.8em 0;
+  padding: 0.5em 1.3em;
+  border-left: 3px solid #cccccc;
+  background: var(--soft);
+  color: #555555;
+  font-family: "BlogKaiCN", "Palatino Linotype", "Book Antiqua", Palatino,
+    "Kaiti SC", KaiTi, STKaiti, "楷体", serif;
+}
+
+.prose blockquote p {
+  margin: 0.6em 0;
+}
+
+/* 图片自适应并居中 */
+.prose img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 2em auto;
+}
+
+.prose figure {
+  margin: 2em 0;
+  text-align: center;
+}
+
+.prose figcaption {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.5em;
+}
+
+/* 代码 */
+.prose code {
+  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-size: 0.88em;
+  background: #f6f6f6;
+  padding: 0.1em 0.35em;
+}
+
+.prose pre {
+  background: #fafafa;
+  border: 1px solid var(--border);
+  padding: 1em 1.2em;
+  overflow-x: auto;
+  line-height: 1.55;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+
+/* ===== 搜索页 ===== */
+.search-page {
+  max-width: 620px;
+  margin-inline: auto;
+}
+
+.search-box input[type="search"] {
+  width: 100%;
+  font: inherit;
+  color: var(--text);
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 0;
+  padding: 0.65em 0.9em;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.search-box input[type="search"]:focus {
+  outline: none;
+  border-color: #999999;
+}
+
+.search-status {
+  min-height: 1.4em;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 1em 0 0.2em;
+}
+
+.search-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.search-results li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-results a {
+  color: var(--title);
+}
+
+.search-results time {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ===== 页脚 ===== */
+.site-footer {
+  position: relative;
+  margin-top: 7rem;
+  border-top: 0;
+}
+
+/* 四角装饰：每角一小段横线 + 一小段竖线，中间无框线 */
+.site-footer .corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.site-footer .corner::before,
+.site-footer .corner::after {
+  content: "";
+  position: absolute;
+  background: #b8b2a7;
+}
+
+.corner-tl { top: 0; left: 0; }
+.corner-tl::before { top: 0; left: 0; width: 16px; height: 1px; }
+.corner-tl::after { top: 0; left: 0; width: 1px; height: 16px; }
+
+.corner-tr { top: 0; right: 0; }
+.corner-tr::before { top: 0; right: 0; width: 16px; height: 1px; }
+.corner-tr::after { top: 0; right: 0; width: 1px; height: 16px; }
+
+.corner-bl { bottom: 0; left: 0; }
+.corner-bl::before { bottom: 0; left: 0; width: 16px; height: 1px; }
+.corner-bl::after { bottom: 0; left: 0; width: 1px; height: 16px; }
+
+.corner-br { bottom: 0; right: 0; }
+.corner-br::before { bottom: 0; right: 0; width: 16px; height: 1px; }
+.corner-br::after { bottom: 0; right: 0; width: 1px; height: 16px; }
+
+.footer-inner {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+  padding: 30px 0 22px;
+}
+
+.footer-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.footer-links a {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-left: 1.2rem;
+}
+
+.footer-links a:hover {
+  color: var(--title);
+}
+
+::selection {
+  background: #efefef;
+}
+
+/* ===== 边框方案预览（定稿后删除） ===== */
+body.frame-a::before {
+  content: "";
+  position: fixed;
+  inset: 14px;
+  z-index: 900;
+  pointer-events: none;
+  background:
+    linear-gradient(#d8d4cc, #d8d4cc) 0 0 / 44px 1px no-repeat,
+    linear-gradient(#d8d4cc, #d8d4cc) 0 0 / 1px 44px no-repeat,
+    linear-gradient(#d8d4cc, #d8d4cc) 100% 0 / 44px 1px no-repeat,
+    linear-gradient(#d8d4cc, #d8d4cc) 100% 0 / 1px 44px no-repeat,
+    linear-gradient(#d8d4cc, #d8d4cc) 0 100% / 44px 1px no-repeat,
+    linear-gradient(#d8d4cc, #d8d4cc) 0 100% / 1px 44px no-repeat,
+    linear-gradient(#d8d4cc, #d8d4cc) 100% 100% / 44px 1px no-repeat,
+    linear-gradient(#d8d4cc, #d8d4cc) 100% 100% / 1px 44px no-repeat;
+}
+
+body.frame-b::before,
+body.frame-b::after {
+  content: "";
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: #ddd9d1;
+  z-index: 900;
+  pointer-events: none;
+}
+
+body.frame-b::before { top: 14px; }
+body.frame-b::after { bottom: 14px; }
+
+body.frame-c::before {
+  content: "";
+  position: fixed;
+  inset: 12px;
+  border: 1px solid #e2ded6;
+  z-index: 900;
+  pointer-events: none;
+}
+
+.frame-toolbar {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #faf9f6;
+  border: 1px solid #e7e3dc;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.frame-toolbar button {
+  font: inherit;
+  background: none;
+  border: 1px solid #dddddd;
+  padding: 2px 9px;
+  cursor: pointer;
+}
+
+.frame-toolbar button.on {
+  background: #eae6df;
+  border-color: #b8b2a7;
+}
+
+/* ===== 夜间模式 ===== */
+body.dark {
+  --bg: #1b1a18;
+  --text: #d6d2ca;
+  --muted: #8d887f;
+  --title: #f0ede6;
+  --border: #33312d;
+  --soft: #262421;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.dark .nav-link { color: #c8c3ba; }
+body.dark .nav-link:hover,
+body.dark .nav-link.active { color: #f0ede6; }
+body.dark .theme-toggle { background: #262421; border-color: #45423d; color: #e6e1d8; }
+body.dark .theme-toggle:hover { background: #322f2b; border-color: #6d685f; }
+body.dark .home-tagline { color: #a09a90; }
+body.dark .home-avatar { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.45); }
+body.dark .prose blockquote { background: #211f1c; color: #cfc9c0; }
+body.dark .prose code { background: #2a2825; color: #e5e0d6; }
+body.dark .prose pre { background: #201f1c; border-color: #3a3732; }
+body.dark .search-box input[type="search"] { background: #23211f; color: var(--text); border-color: #4a463f; }
+body.dark .photo-cell { background: #262421; }
+body.dark .site-footer .corner::before,
+body.dark .site-footer .corner::after { background: #6e6960; }
+body.dark .head-corner::before,
+body.dark .head-corner::after { background: #d9d4ca; }
+body.dark .header-inner { border-bottom-color: #8a867e; }
+body.dark ::selection { background: #4d4942; }
+
+/* ===== 手机适配 ===== */
+@media (max-width: 640px) {
+  .container {
+    padding-inline: 20px;
+  }
+
+  /* 手机上正文仍留 20px 边距，避免文字贴边 */
+  .main.container {
+    padding-inline: 20px;
+  }
+
+  .hc-tl { left: 20px; }
+  .hc-tr { right: 20px; }
+  .header-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 18px;
+    padding-bottom: 16px;
+  }
+
+  .site-nav {
+    justify-content: flex-end;
+    gap: 0.2rem 0.75rem;
+  }
+
+  .main.container {
+    margin-block: 40px 72px;
+  }
+
+  .laundry-frame { width: 74px; }
+  .laundry-frame img { height: 64px; }
+  .home-cover {
+    padding: 5vh 0 2.5vh;
+  }
+  .home-avatar {
+    width: 84px;
+    height: 84px;
+  }
+  .home-hello {
+    font-size: 1.5rem;
+    margin: 0.9em 0 0.2em;
+  }
+  .home-tagline { margin: 0 0 1em; }
+  .laundry { margin-top: 0.5rem; }
+  .post-row,
+  .archive-item {
+    flex-wrap: wrap;
+  }
+
+  .post-date,
+  .archive-date {
+    white-space: normal;
+  }
+
+
+}

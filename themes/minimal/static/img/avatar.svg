@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="头像占位">
+  <circle cx="200" cy="200" r="200" fill="#f3f3f3"/>
+  <g fill="#d9d9d9">
+    <circle cx="200" cy="150" r="58"/>
+    <path d="M200 228c-72 0-124 46-136 104h272c-12-58-64-104-136-104z"/>
+  </g>
+  <text x="200" y="378" text-anchor="middle" font-size="22" fill="#a8a8a8" font-family="serif">我的头像</text>
+</svg>

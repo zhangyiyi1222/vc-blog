@@ -1,0 +1,6 @@
+{{- $src := .Get "src" -}}
+{{- $poster := .Get "poster" | default "" -}}
+<video controls preload="metadata" playsinline style="width:100%;max-width:100%;margin:1.5em auto;display:block;background:#000;{{ with $poster }}object-fit:cover{{ end }}"{{ with $poster }} poster="{{ $poster | safeURL }}"{{ end }}>
+  <source src="{{ $src | safeURL }}" type="video/mp4">
+  你的浏览器不支持视频播放。
+</video>

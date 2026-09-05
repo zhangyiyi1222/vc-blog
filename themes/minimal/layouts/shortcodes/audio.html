@@ -1,0 +1,7 @@
+{{- $src := .Get "src" -}}
+{{- $type := "audio/mp4" -}}
+{{- if hasSuffix $src ".mp3" -}}{{- $type = "audio/mpeg" -}}{{- end -}}
+<audio controls preload="metadata" style="width:100%;margin:1.2em 0;">
+  <source src="{{ $src | safeURL }}" type="{{ $type }}">
+  你的浏览器不支持音频播放。
+</audio>

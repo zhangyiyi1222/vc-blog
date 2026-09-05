@@ -1,0 +1,9 @@
+# Hugo 构建输出
+public/
+.hugo_build.lock
+resources/_gen/
+
+# 系统杂项
+.DS_Store
+Thumbs.db
+*.log

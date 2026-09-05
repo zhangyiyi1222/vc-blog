@@ -1,0 +1,32 @@
+{{ define "title" }}{{ .Title }} · {{ site.Title }}{{ end }}
+{{ define "pagehead" }}
+<header class="page-head container article-meta">
+  <h1 class="post-single-title">{{ .Title }}</h1>
+  {{- if eq .Type "posts" -}}
+  <div class="meta-line">
+    <span class="meta-left">
+      {{- $author := .Params.author | default site.Params.author -}}
+      {{- with $author -}}<span class="author">{{ . }}</span>{{ end -}}
+      {{- with $.Date -}}<span class="date"><time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006-01-02" }}</time></span>{{ end -}}
+    </span>
+    {{- with .GetTerms "categories" -}}
+    <span class="meta-right term">
+      {{- range . -}}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end -}}
+    </span>
+    {{- end -}}
+  </div>
+  {{- end -}}
+</header>
+{{ end }}
+{{ define "main" }}
+<article class="post-single">
+
+  <div class="prose">
+    {{- $toc := .TableOfContents -}}
+    {{- if strings.Contains $toc "<li" -}}
+    <div class="toc">{{ $toc | safeHTML }}</div>
+    {{- end -}}
+    {{ .Content }}
+  </div>
+</article>
+{{ end }}

@@ -1,0 +1,20 @@
+{{ define "title" }}首页 · {{ site.Title }}{{ end }}
+{{ define "main" }}
+<section class="home-cover">
+  {{- with site.Params.avatar -}}
+  <img class="home-avatar" src="{{ . | relURL }}" alt="">
+  {{- end -}}
+  <h1 class="home-hello">你好，我是 zhangzhongwei</h1>
+  <p class="home-tagline">认真生活，随手记录。</p>
+</section>
+
+<section class="laundry" aria-label="照片">
+  <div class="laundry-row">
+    {{- range $i := seq 11 -}}
+    <a class="laundry-frame" href="{{ printf "/img/home/%02d.jpg" $i }}" target="_blank" rel="noopener">
+      <img src="{{ printf "/img/home/%02d.jpg" $i }}" alt="" loading="lazy">
+    </a>
+    {{- end -}}
+  </div>
+</section>
+{{ end }}

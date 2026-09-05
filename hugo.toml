@@ -1,0 +1,67 @@
+# ===== 站点基础信息 =====
+# TODO: 部署到 GitHub Pages 前，把 baseURL 里的占位改成你的真实地址，例如：
+# baseURL = "https://zhangsan.github.io/"
+baseURL = "https://zhangzhongwei.top/"
+
+title = "我的博客"   # TODO: 改成你自己的博客名
+theme = "minimal"
+languageCode = "zh-CN"
+defaultContentLanguage = "zh"
+timeZone = "Asia/Shanghai"
+hasCJKLanguage = true
+enableEmoji = true
+
+# ===== 分类 =====
+# 只用“分类”一种归类方式，不启用标签
+[taxonomies]
+  category = "categories"
+
+# ===== 站点参数 =====
+[params]
+  description = "记录日常思考、读书笔记与生活片段的地方"
+  author = "你的名字"   # TODO: 改成你自己的署名，会显示在每篇文章标题下方
+  avatar = "/img/avatar.jpg"   # 顶栏左侧的小图，换成你自己的头像时覆盖此文件即可
+  homepageSize = 8   # 首页默认展示最近几篇文章
+
+# ===== 主导航：首页 | 日志 | 分类 | 搜索 | 关于 =====
+[menu]
+
+[[menu.main]]
+  name = "首页"
+  url = "/"
+  weight = 1
+
+[[menu.main]]
+  name = "日志"
+  url = "/posts/"
+  weight = 2
+
+[[menu.main]]
+  name = "分类"
+  url = "/categories/"
+  weight = 3
+[[menu.main]]
+  name = "搜索"
+  url = "/search/"
+  weight = 5
+
+[[menu.main]]
+  name = "关于"
+  url = "/about/"
+  weight = 6
+
+# ===== 首页额外输出 index.json（站内搜索的索引文件） =====
+[outputs]
+  home = ["HTML", "JSON"]
+  page = ["HTML"]
+  section = ["HTML"]
+  taxonomy = ["HTML"]
+  term = ["HTML"]
+
+[outputFormats]
+
+[outputFormats.json]
+  mediaType = "application/json"
+  baseName = "index"
+  isPlainText = true
+  notAlternative = true

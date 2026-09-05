@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.LanguageCode | default "zh-CN" }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ block "title" . }}{{ if not .IsHome }}{{ with .Title }}{{ . }} · {{ end }}{{ end }}{{ site.Title }}{{ end }}</title>
+  <meta name="description" content="{{ .Description | default site.Params.description | plainify }}">
+  <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+  {{ block "head" . }}{{ end }}
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="site-brand" href="{{ site.Home.RelPermalink }}">
+        {{- with site.Params.avatar -}}
+        <img class="site-avatar" src="{{ . | relURL }}" alt="" width="40" height="40">
+        {{- end -}}
+        <span class="site-brand-name">{{ site.Title }}</span>
+      </a>
+      <div class="header-right">
+      <nav class="site-nav" aria-label="主导航">
+        {{- $current := .RelPermalink -}}
+        {{- range site.Menus.main -}}
+          {{- $active := false -}}
+          {{- if eq .URL "/" -}}
+            {{- $active = eq $current "/" -}}
+          {{- else -}}
+            {{- $active = hasPrefix $current .URL -}}
+          {{- end -}}
+          <a class="nav-link{{ if $active }} active{{ end }}" href="{{ .URL | relURL }}">{{ .Name }}</a>
+        {{- end -}}
+      </nav>
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换日间/夜间模式" title="切换日间/夜间">
+          <span id="theme-icon" class="theme-icon" aria-hidden="true">☾</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  {{ block "pagehead" . }}{{ end }}
+  <main class="main container{{ if not .IsNode }} main-narrow{{ end }}" id="main">
+    {{ block "main" . }}{{ end }}
+  </main>
+
+  <footer class="site-footer container">
+    <div class="footer-inner">
+      <p class="footer-copy">© zhangzhongwei</p>
+    </div>
+  </footer>
+  {{ block "footer" . }}{{ end }}
+  <script src="{{ "js/theme.js" | relURL }}" defer></script>
+</body>
+</html>

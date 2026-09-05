@@ -1,0 +1,59 @@
+{{ define "title" }}{{ .Title }} · {{ site.Title }}{{ end }}
+{{ define "pagehead" }}
+{{- $heading := .Title -}}
+{{- if eq .Kind "taxonomy" -}}
+  {{- $heading = "分类" -}}
+{{- else if eq .Section "posts" -}}
+  {{- $heading = "日志" -}}
+{{- end -}}
+<header class="page-head container">
+  <h1 class="page-title">{{ $heading }}</h1>
+</header>
+{{ end }}
+{{ define "main" }}
+{{- if eq .Kind "taxonomy" -}}
+  <ul class="taxonomy-list">
+    {{- range .Pages.ByTitle -}}
+    <li class="taxonomy-item">
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      <span class="taxonomy-count">{{ len .Pages }} 篇</span>
+    </li>
+    {{- end -}}
+  </ul>
+{{- else if eq .Kind "term" -}}
+  <div class="post-list">
+    {{- range .Pages -}}
+    <article class="post-row">
+      <h2 class="post-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+    </article>
+    {{- end -}}
+  </div>
+{{- else if eq .Section "posts" -}}
+  {{- $groups := .Pages.GroupByDate "2006" -}}
+  {{- range $groups -}}
+  <section class="archive-year">
+    <h2 class="archive-year-title">{{ .Key }}</h2>
+    {{- $months := .Pages.GroupByDate "2006-01" -}}
+    {{- range $months -}}
+    <section class="archive-month">
+      <ul class="archive-list">
+        {{- range .Pages -}}
+        <li class="archive-item"><span class="archive-date">{{ dateFormat "1月2日" .Date }}</span><a class="archive-title" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{- end -}}
+      </ul>
+    </section>
+    {{- end -}}
+  </section>
+  {{- end -}}
+{{- else -}}
+  <div class="post-list">
+    {{- range .Pages -}}
+    <article class="post-row">
+      <h2 class="post-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+    </article>
+    {{- end -}}
+  </div>
+{{- end -}}
+{{ end }}
