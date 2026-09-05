@@ -10,6 +10,7 @@ defaultContentLanguage = "zh"
 timeZone = "Asia/Shanghai"
 hasCJKLanguage = true
 enableEmoji = true
+buildFuture = true  # 允许日期稍晚的文章也显示，避免误以为没发布
 
 # ===== 分类 =====
 # 只用“分类”一种归类方式，不启用标签
