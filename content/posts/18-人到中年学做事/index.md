@@ -3,6 +3,7 @@ title: "人到中年学做事"
 date: 2014-02-24T00:00:00+08:00
 categories:
   - 亲
+  - 生长
 draft: false
 ---
 
