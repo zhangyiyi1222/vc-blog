@@ -957,6 +957,10 @@ body.dark ::selection { background: #4d4942; }
     padding-inline: 20px;
   }
 
+  /* iOS：用当前可视高度，不被地址栏骗高 */
+  body {
+    min-height: 100dvh;
+  }
   /* 手机上正文仍留 20px 边距，避免文字贴边 */
   .main.container {
     padding-inline: 20px;
@@ -1009,6 +1013,10 @@ body.dark ::selection { background: #4d4942; }
   }
   .home-cover { padding: 2vh 0 1vh; }
   .laundry { padding-bottom: 4px; }
+  .home-avatar { width: 76px; height: 76px; }
+  .home-hello { font-size: 1.35rem; }
+  .laundry-frame { width: 70px; }
+  .laundry-frame img { height: 60px; }
   .post-row,
   .archive-item {
     flex-wrap: wrap;
