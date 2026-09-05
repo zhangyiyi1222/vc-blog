@@ -74,8 +74,7 @@ body {
 }
 
 .main.container {
-  margin-block: 56px 96px;
-  min-height: 56vh;
+  margin-block: 48px 56px;
 }
 
 /* 正文自动撑满，页脚贴底 */
@@ -784,7 +783,7 @@ a:hover {
 /* ===== 页脚 ===== */
 .site-footer {
   position: relative;
-  margin-top: 7rem;
+  margin-top: 3rem;
   border-top: 0;
 }
 
