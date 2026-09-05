@@ -82,6 +82,15 @@ body {
   flex: 1 0 auto;
 }
 
+/* 非首页：正常文档流，页脚紧跟内容，不留中间空隙 */
+body:not(.is-home) {
+  display: block;
+  min-height: 0;
+}
+body:not(.is-home) .main.container {
+  flex: none;
+}
+
 /* 列表/归档页与顶栏同宽；单篇文章/关于页收窄为 620px 居中 */
 .main-narrow {
   max-width: 620px;
@@ -1001,7 +1010,7 @@ body.dark ::selection { background: #4d4942; }
   .home-tagline { margin: 0 0 1em; }
   .laundry { margin-top: 0.5rem; }
   /* 手机端用满一屏，空隙分给上下，不留死白 */
-  .main.container {
+  .is-home .main.container {
     min-height: 0;
     display: flex;
     flex-direction: column;

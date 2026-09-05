@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
   {{ block "head" . }}{{ end }}
 </head>
-<body>
+<body{{ if .IsHome }} class="is-home"{{ end }}>
   <header class="site-header">
     <div class="container header-inner">
       <a class="site-brand" href="{{ site.Home.RelPermalink }}">
