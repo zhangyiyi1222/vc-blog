@@ -1014,13 +1014,16 @@ body.dark ::selection { background: #4d4942; }
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     margin-block: 0;
     padding-top: 14px;
     padding-bottom: 6px;
   }
   .home-cover { padding: 2vh 0 1vh; }
   .laundry { padding-bottom: 4px; }
+  .home-cover { padding: 1vh 0 0.2vh; }
+  .home-tagline { margin: 0 0 0.35em; }
+  .laundry { margin-top: 0; }
   .site-footer { margin-top: 0; }
   .home-avatar { width: 76px; height: 76px; }
   .home-hello { font-size: 1.35rem; }
