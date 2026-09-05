@@ -4,7 +4,7 @@ date: 2026-09-06T12:00:00+08:00
 categories: ["生活片段"]
 draft: false
 ---
-
 今天拍到一只猫。
 
-![猫](photo-01.jpg)
+{{< img src="photo-01.jpg" alt="猫" >}}
+
