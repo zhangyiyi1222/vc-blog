@@ -969,6 +969,14 @@ body.dark ::selection { background: #4d4942; }
   body {
     min-height: 100dvh;
   }
+  body:not(.is-home) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+  body:not(.is-home) .main.container {
+    flex: 1 0 auto;
+  }
   /* 手机上正文仍留 20px 边距，避免文字贴边 */
   .main.container {
     padding-inline: 20px;
