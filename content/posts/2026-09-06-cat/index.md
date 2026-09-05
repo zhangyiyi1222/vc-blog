@@ -6,5 +6,6 @@ draft: false
 ---
 今天拍到一只猫。
 
-{{< img src="photo-01.jpg" alt="猫" >}}
+![猫](/photo-01.jpg)
+
 
