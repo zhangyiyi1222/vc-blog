@@ -1,7 +1,7 @@
 ---
-title: “睡吧"
+title: 睡吧
 date: 2026-09-06T00:00:00+08:00
-categories: ["我们的聊天"]
+categories: ["我与妈妈"]
 draft: false
 ---
 （日期待确认）
