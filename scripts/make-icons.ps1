@@ -1,4 +1,5 @@
 # 从头像生成苹果主屏幕图标与网站 favicon（居中裁成正方形）
+param([string]$Source = '')
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
@@ -25,7 +26,7 @@ function New-SquareIcon([string]$src, [string]$out, [int]$size) {
 }
 
 $root = Split-Path -Parent $PSScriptRoot
-$src = Join-Path $root 'static\img\avatar.jpg'
+$src = if ($Source) { $Source } else { Join-Path $root 'static\img\avatar.jpg' }
 New-SquareIcon $src (Join-Path $root 'static\img\apple-touch-icon.png') 180
 New-SquareIcon $src (Join-Path $root 'static\img\icon-32.png') 32
 Write-Output '图标已生成'
