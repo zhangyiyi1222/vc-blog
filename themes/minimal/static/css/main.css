@@ -74,7 +74,7 @@ body {
 }
 
 .main.container {
-  margin-block: 48px 56px;
+  margin-block: 48px 0;
 }
 
 /* 正文自动撑满，页脚贴底 */
@@ -785,7 +785,7 @@ a:hover {
 /* ===== 页脚 ===== */
 .site-footer {
   position: relative;
-  margin-top: 3rem;
+  margin-top: 0;
   border-top: 0;
 }
 
@@ -992,7 +992,7 @@ body.dark ::selection { background: #4d4942; }
   }
 
   .main.container {
-    margin-block: 40px 72px;
+    margin-block: 24px 0;
   }
 
   .laundry-frame { width: 74px; }
