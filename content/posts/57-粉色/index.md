@@ -2,7 +2,7 @@
 title: "粉色"
 date: 2022-07-05T09:00:00+08:00
 categories:
-  - ：生活
+  - 生活
 draft: false
 ---
 
