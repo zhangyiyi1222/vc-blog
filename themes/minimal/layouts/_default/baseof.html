@@ -6,6 +6,8 @@
   <title>{{ block "title" . }}{{ if not .IsHome }}{{ with .Title }}{{ . }} · {{ end }}{{ end }}{{ site.Title }}{{ end }}</title>
   <meta name="description" content="{{ .Description | default site.Params.description | plainify }}">
   <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+  <link rel="icon" type="image/png" href="{{ "img/icon-32.png" | relURL }}">
+  <link rel="apple-touch-icon" href="{{ "img/apple-touch-icon.png" | relURL }}">
   {{ block "head" . }}{{ end }}
 </head>
 <body{{ if .IsHome }} class="is-home"{{ end }}>
