@@ -31,6 +31,8 @@
   let tree = [];
   let selectedFiles = [];
   let placedMedia = 0;
+  let homeConfig = { photos: [] };
+  let homeConfigSha = null;
 
   try { const s = localStorage.getItem(TOKEN_KEY); if (s) tokenEl.value = s; } catch (e) {}
   dateEl.value = new Date().toISOString().slice(0, 10);
@@ -414,6 +416,56 @@
     placedMedia++;
     setStatus('已插入第 ' + placedMedia + ' 个图片占位符');
   });
+  const photoPanel = document.getElementById('photoPanel');
+  const photoInput = document.getElementById('photoInput');
+  const photoGrid = document.getElementById('photoGrid');
+  const photoUploadBtn = document.getElementById('photoUpload');
+  async function loadHomePhotos() {
+    if (!token()) { setStatus('请先填写令牌', 'err'); return; }
+    tree = (await apiGet('git/trees/main?recursive=1')).tree || [];
+    const cfg = await apiGet('contents/data/home.json');
+    const conf = JSON.parse(base64Decode(cfg.content));
+    homeConfig = conf; homeConfigSha = cfg.sha;
+    photoGrid.innerHTML = '';
+    conf.photos.forEach(function (name) {
+      const wrap = document.createElement('div');
+      const img = document.createElement('img');
+      img.src = 'https://raw.githubusercontent.com/' + USER + '/' + REPO + '/main/static/img/home/' + encodeURIComponent(name);
+      img.style.cssText = 'width:86px;height:64px;object-fit:cover;display:block;border:1px solid #eee;';
+      const rm = document.createElement('button');
+      rm.textContent = '移除';
+      rm.style.fontSize = '.75rem';
+      rm.addEventListener('click', function () { deleteHomePhoto(name); });
+      wrap.appendChild(img); wrap.appendChild(rm); photoGrid.appendChild(wrap);
+    });
+    setStatus('首页相片共 ' + conf.photos.length + ' 张');
+  }
+  async function saveHomeConfig() {
+    await githubPut('data/home.json', JSON.stringify(homeConfig, null, 2), '更新首页相片', false, homeConfigSha);
+    const fresh = await apiGet('contents/data/home.json'); homeConfigSha = fresh.sha;
+  }
+  async function deleteHomePhoto(name) {
+    if (!confirm('从首页移除这张相片？（原文件也删除）')) return;
+    const blob = tree.find(function (b) { return b.type === 'blob' && b.path === 'static/img/home/' + name; });
+    if (blob) await githubDelete(blob.path, blob.sha);
+    homeConfig.photos = homeConfig.photos.filter(function (n) { return n !== name; });
+    await saveHomeConfig(); await loadHomePhotos();
+  }
+  if (photoUploadBtn) photoUploadBtn.addEventListener('click', async function () {
+    if (!token()) { setStatus('请先填写令牌', 'err'); return; }
+    photoUploadBtn.disabled = true;
+    try {
+      for (let i = 0; i < photoInput.files.length; i++) {
+        const f = photoInput.files[i];
+        const data = await readAsDataURL(f);
+        const name = 'home-' + Date.now() + '-' + (i + 1) + '.' + fileExt(f.name);
+        await githubPut('static/img/home/' + name, data.split(',')[1], '上传首页相片', true);
+        homeConfig.photos.push(name);
+      }
+      await saveHomeConfig(); photoInput.value = ''; await loadHomePhotos();
+    } catch (err) { setStatus('相片上传失败：' + err.message, 'err'); }
+    finally { photoUploadBtn.disabled = false; }
+  });
   const moduleHint = document.getElementById('moduleHint');
   const writeControls = document.querySelectorAll('.field, #publish, #cancelEdit');
   function setWriteVisible(on) {
@@ -425,11 +477,12 @@
     btn.addEventListener('click', async function () {
       const m = btn.dataset.module;
       managePanel.hidden = false;
+      photoPanel.hidden = true;
       if (m === 'write') { setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
       if (!token()) { setWriteVisible(true); moduleHint.textContent = '请先填写并保存令牌'; return; }
       if (m === 'logs') { setWriteVisible(false); await loadPosts(true); moduleHint.textContent = '日志管理：点编辑改旧文章，点删除整篇删除。'; return; }
       if (m === 'category') { setWriteVisible(false); moduleHint.textContent = '写一篇或编辑文章时，在“或输入新分类”里填新名字即可添加分类；分类页会自动生成。'; return; }
-      if (m === 'photos') { setWriteVisible(false); moduleHint.textContent = '首页照片管理即将上线；目前可先放照片到桌面“待发布”让我添加。'; return; }
+      if (m === 'photos') { setWriteVisible(false); managePanel.hidden = true; photoPanel.hidden = false; moduleHint.textContent = '相片：选择相片后点“上传到首页”，点“移除”可删。'; await loadHomePhotos(); return; }
       if (m === 'about' || m === 'home') {
         await loadPosts(true);
         const target = m === 'about' ? pickBlob('content/about.md') : pickBlob('data/site.json');

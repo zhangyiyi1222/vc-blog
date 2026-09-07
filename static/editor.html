@@ -110,6 +110,12 @@
       <ul id="postList" style="list-style:none;padding:0;margin:0;"></ul>
     </div>
     <p class="status" id="status2"></p>
+    <div id="photoPanel" hidden style="margin-top:14px;">
+      <p class="hint">首页相片会按顺序展示。先选照片再点上传。</p>
+      <input type="file" id="photoInput" accept="image/*" multiple>
+      <button class="btn btn-primary" id="photoUpload" type="button" style="margin-top:8px;">上传到首页</button>
+      <div id="photoGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
+    </div>
     <button class="btn" id="tokenBtn" hidden type="button">设置 / 修改令牌</button>
   </div>
 
