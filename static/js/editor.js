@@ -29,6 +29,8 @@
 
   let editing = null; // { path, sha, folder }
   let tree = [];
+  let selectedFiles = [];
+  let placedMedia = 0;
 
   try { const s = localStorage.getItem(TOKEN_KEY); if (s) tokenEl.value = s; } catch (e) {}
   dateEl.value = new Date().toISOString().slice(0, 10);
@@ -143,7 +145,7 @@
   }
 
   function resetForm() {
-    titleEl.value = ''; bodyEl.value = ''; filesEl.value = ''; fileListEl.textContent = '';
+    titleEl.value = ''; bodyEl.value = ''; filesEl.value = ''; fileListEl.textContent = ''; selectedFiles = []; placedMedia = 0;
     dateEl.value = new Date().toISOString().slice(0, 10);
     editing = null;
     publishBtn.textContent = '发布';
@@ -188,7 +190,7 @@
     }
     const folder = editing ? editing.folder : 'content/posts/' + date + '-' + safeTitle(title);
     const message = (editing ? '修改：' : '发布：') + title;
-    const files = Array.prototype.slice.call(filesEl.files);
+    const files = selectedFiles.slice();
     const mediaLines = [];
     publishBtn.disabled = true;
 
@@ -213,6 +215,7 @@
         }
       }
       setStatus('写入文章…');
+      if (/\[\[IMG-\d+\]\]/.test(finalBody)) throw new Error('还有未对应文件的图片占位符，请补选图片或删除 [[IMG-x]]');
       const finalText = finalBody + (tailMedia.length ? '\n\n' + tailMedia.join('\n\n') + '\n' : '');
       const md = buildMarkdown(title, date, category, finalText, []);
       await githubPut(folder + '/index.md', md, message, false, editing && editing.sha);
@@ -360,29 +363,52 @@
   }
 
   filesEl.addEventListener('change', function () {
-  const files = Array.prototype.slice.call(filesEl.files);
-  fileListEl.textContent = files.length
-    ? files.map(function (f) { return f.name + '（' + Math.round(f.size / 1024) + ' KB）'; }).join('；')
-    : '';
+    for (let i = 0; i < filesEl.files.length; i++) {
+      selectedFiles.push(filesEl.files[i]);
+    }
+    filesEl.value = '';
+    renderFiles();
   });
+
+  function renderFiles() {
+    fileListEl.innerHTML = '';
+    selectedFiles.forEach(function (f, idx) {
+      const s = document.createElement('span');
+      s.style.display = 'inline-block';
+      s.style.marginRight = '8px';
+      s.textContent = (idx + 1) + '. ' + f.name + '（' + Math.round(f.size / 1024) + ' KB）';
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.textContent = '移除';
+      rm.style.fontSize = '.75rem';
+      rm.addEventListener('click', function () { selectedFiles.splice(idx, 1); if (placedMedia > selectedFiles.length) placedMedia = selectedFiles.length; renderFiles(); });
+      s.appendChild(rm);
+      fileListEl.appendChild(s);
+    });
+  }
+
+  function insertAtCursor(text) {
+    const pos = bodyEl.selectionStart == null ? bodyEl.value.length : bodyEl.selectionStart;
+    const end = bodyEl.selectionEnd == null ? pos : bodyEl.selectionEnd;
+    const before = bodyEl.value.slice(0, pos);
+    const after = bodyEl.value.slice(end);
+    const lead = before && !before.endsWith('\n') ? '\n\n' : '\n';
+    const trail = after && !after.startsWith('\n') ? '\n' : '';
+    bodyEl.value = before + lead + text + trail + after;
+    bodyEl.focus();
+  }
 
   const noteBtn = document.getElementById('noteBtn');
   if (noteBtn) noteBtn.addEventListener('click', function () {
-    bodyEl.value += (bodyEl.value ? '\n\n' : '') + '{{< note >}}在这里写小字注释{{< /note >}}' + '\n';
-    bodyEl.focus();
+    insertAtCursor('{{< note >}}在这里写小字注释{{< /note >}}');
   });
 
   const mediaBtn = document.getElementById('mediaBtn');
   if (mediaBtn) mediaBtn.addEventListener('click', function () {
-    const n = filesEl.files.length;
-    if (!n) { setStatus('请先选择图片/视频再点插入', 'err'); return; }
-    const tokens = [];
-    for (let i = 1; i <= n; i++) tokens.push('[[IMG-' + i + ']]');
-    const insert = (bodyEl.value ? '\n\n' : '') + tokens.join('\n\n') + '\n';
-    const pos = bodyEl.selectionStart == null ? bodyEl.value.length : bodyEl.selectionStart;
-    bodyEl.value = bodyEl.value.slice(0, pos) + insert + bodyEl.value.slice(bodyEl.selectionEnd == null ? pos : bodyEl.selectionEnd);
-    bodyEl.focus();
-    setStatus('已插入占位符：图片会出现在这里');
+    if (placedMedia >= selectedFiles.length) { setStatus('没有待插入的文件：先选图片/视频，再点这里', 'err'); return; }
+    insertAtCursor('[[IMG-' + (placedMedia + 1) + ']]');
+    placedMedia++;
+    setStatus('已插入第 ' + placedMedia + ' 个图片占位符');
   });
   const moduleHint = document.getElementById('moduleHint');
   const writeControls = document.querySelectorAll('.field, #publish, #cancelEdit');
