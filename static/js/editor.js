@@ -57,6 +57,7 @@
     target.className = 'status' + (type ? ' ' + type : '');
   }
   function token() { return tokenEl.value.trim(); }
+  function setStatus2(text, type) { setStatus(text, type, status2El); }
 
   function base64Encode(str) {
     const bytes = new TextEncoder().encode(str);
@@ -189,6 +190,7 @@
       return;
     }
     const folder = editing ? editing.folder : 'content/posts/' + date + '-' + safeTitle(title);
+    if (editing && editing.single && selectedFiles.length) { setStatus('这篇旧格式单文件不能加图：请先删除旧文，再新建一篇发图', 'err'); return; }
     const message = (editing ? '修改：' : '发布：') + title;
     const files = selectedFiles.slice();
     const mediaLines = [];
@@ -218,7 +220,8 @@
       if (/\[\[IMG-\d+\]\]/.test(finalBody)) throw new Error('还有未对应文件的图片占位符，请补选图片或删除 [[IMG-x]]');
       const finalText = finalBody + (tailMedia.length ? '\n\n' + tailMedia.join('\n\n') + '\n' : '');
       const md = buildMarkdown(title, date, category, finalText, []);
-      await githubPut(folder + '/index.md', md, message, false, editing && editing.sha);
+      const mdPath = editing ? (editing.mdPath || folder + '/index.md') : folder + '/index.md';
+      await githubPut(mdPath, md, message, false, editing && editing.sha);
       setStatus('成功！约 1 分钟后更新。', 'ok');
       if (editing) loadPosts(true);
       resetForm();
@@ -304,14 +307,21 @@
         categoryEl.value = fm.category;
       }
       bodyEl.value = fm.body;
-      editing = { path: blob.path, sha: data.sha, mode: blob.path === 'content/about.md' ? 'about' : 'post', folder: blob.path.slice(0, -'/index.md'.length) };
+      const isSingle = !blob.path.endsWith('/index.md');
+      editing = {
+        path: blob.path, sha: data.sha, mode: blob.path === 'content/about.md' ? 'about' : 'post',
+        single: isSingle,
+        mdPath: isSingle ? blob.path : blob.path.slice(0, -'/index.md'.length) + '/index.md',
+        folder: isSingle ? blob.path.slice(0, -'.md'.length) : blob.path.slice(0, -'/index.md'.length)
+      };
       publishBtn.textContent = '保存修改';
       cancelBtn.hidden = false;
       setWriteVisible(true);
       managePanel.hidden = true;
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setStatus('正在编辑：' + blob.path);
-    } catch (err) { setStatus('读取失败：' + err.message, 'err'); }
+    } catch (err) { setStatus2('读取失败：' + err.message, 'err'); }
+
   }
 
   async function removePost(blob) {
