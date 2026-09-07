@@ -29,4 +29,6 @@ $root = Split-Path -Parent $PSScriptRoot
 $src = if ($Source) { $Source } else { Join-Path $root 'static\img\avatar.jpg' }
 New-SquareIcon $src (Join-Path $root 'static\img\apple-touch-icon.png') 180
 New-SquareIcon $src (Join-Path $root 'static\img\icon-32.png') 32
+New-SquareIcon $src (Join-Path $root 'static\img\icon-192.png') 192
+New-SquareIcon $src (Join-Path $root 'static\img\icon-512.png') 512
 Write-Output '图标已生成'
