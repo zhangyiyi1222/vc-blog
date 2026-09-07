@@ -23,7 +23,7 @@
 
   <div class="prose">
     {{- $toc := .TableOfContents -}}
-    {{- if strings.Contains $toc "<li" -}}
+    {{- if and (eq .Type "posts") (strings.Contains $toc "<li") -}}
     <div class="toc">{{ $toc | safeHTML }}</div>
     {{- end -}}
     {{ .Content }}

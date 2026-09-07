@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/main.css">
   <style>
     .editor-wrap { max-width: 620px; margin: 0 auto; padding: 28px 20px 80px; }
-    .editor-wrap { min-height: 78vh; }
+    .editor-wrap { min-height: 90vh !important; }
     .editor-title { font-size: 1.4rem; margin: 0 0 4px; }
     .editor-note { color: #999; font-size: .85rem; margin: 0 0 22px; }
     .field { margin-bottom: 16px; }
@@ -68,9 +68,6 @@
       <div id="photoGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
     </div>
     <div id="aboutPanel" hidden>
-      <div style="margin-bottom:10px;"><label>密钥（GitHub 令牌）</label><input type="text" id="aboutToken" style="width:100%;box-sizing:border-box;font:inherit;color:#333;border:1px solid #ddd;padding:9px 12px;"></div>
-      <button class="btn" id="saveAboutToken" type="button">保存密钥</button>
-      <hr style="margin:18px 0;border:0;border-top:1px solid #eee;">
       <div><label>关于正文（支持 Markdown）</label><textarea id="aboutBody" style="width:100%;box-sizing:border-box;min-height:320px;font:inherit;color:#333;border:1px solid #ddd;padding:10px 12px;line-height:1.75;"></textarea></div>
       <button class="btn btn-primary" id="saveAboutBtn" type="button">保存关于</button>
     </div>
@@ -121,6 +118,10 @@
     <p class="status" id="status"></p>
     <div id="managePanel" hidden>
       <ul id="postList" style="list-style:none;padding:0;margin:0;"></ul>
+      <div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;">
+        <div><label>密钥（GitHub 令牌，可修改）</label><input type="text" id="aboutToken" style="width:100%;box-sizing:border-box;font:inherit;color:#333;border:1px solid #ddd;padding:9px 12px;"></div>
+        <button class="btn" id="saveAboutToken" type="button" style="margin-top:6px;">保存密钥</button>
+      </div>
     </div>
     <p class="status" id="status2"></p>
     <button class="btn" id="tokenBtn" hidden type="button">设置 / 修改令牌</button>
