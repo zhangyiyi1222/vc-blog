@@ -307,10 +307,10 @@
       editing = { path: blob.path, sha: data.sha, mode: blob.path === 'content/about.md' ? 'about' : 'post', folder: blob.path.slice(0, -'/index.md'.length) };
       publishBtn.textContent = '保存修改';
       cancelBtn.hidden = false;
-      managePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setStatus('正在编辑：' + blob.path);
       setWriteVisible(true);
       managePanel.hidden = true;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setStatus('正在编辑：' + blob.path);
     } catch (err) { setStatus('读取失败：' + err.message, 'err'); }
   }
 
