@@ -577,6 +577,7 @@
   document.querySelectorAll('#moduleNav button').forEach(function (btn) {
     btn.addEventListener('click', async function () {
       const m = btn.dataset.module;
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
       document.querySelectorAll('#moduleNav button').forEach(function (b) { b.classList.remove('active'); });
       btn.classList.add('active');
       managePanel.hidden = true;
@@ -591,7 +592,7 @@
         setStatus('未检测到令牌', 'err');
         return;
       }
-      if (m === 'logs') { setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; return; }
+      if (m === 'logs') { logsScrollY = 0; setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; window.scrollTo(0, 0); return; }
       if (m === 'home') { setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
     });
   });
