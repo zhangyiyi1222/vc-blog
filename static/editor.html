@@ -129,7 +129,7 @@
     <p class="status" id="status"></p>
     <div id="managePanel" hidden>
       <ul id="postList" style="list-style:none;padding:0;margin:0;"></ul>
-      <div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;">
+      <div id="tokenManage" style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;">
         <div><label>密钥（GitHub 令牌，可修改）</label><input type="text" id="aboutToken" style="width:100%;box-sizing:border-box;font:inherit;color:#333;border:1px solid #ddd;padding:9px 12px;"></div>
         <button class="btn" id="saveAboutToken" type="button" style="margin-top:6px;">保存密钥</button>
       </div>
@@ -138,7 +138,7 @@
     <button class="btn" id="tokenBtn" hidden type="button">设置 / 修改令牌</button>
   </div>
 
-  <script src="js/editor.js?v=20260908q" defer></script>
+  <script src="js/editor.js?v=20260908s" defer></script>
   <div id="confirmBox" hidden style="position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.35);align-items:center;justify-content:center;">
     <div style="background:#fff;max-width:320px;width:88%;padding:20px;border:1px solid #ddd;box-shadow:0 8px 30px rgba(0,0,0,.2);">
       <p id="confirmMsg" style="margin:0 0 16px;line-height:1.6;font-size:.95rem;color:#333;"></p>

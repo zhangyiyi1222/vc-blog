@@ -29,9 +29,11 @@
   const confirmMsg = document.getElementById('confirmMsg');
   const confirmOkBtn = document.getElementById('confirmOk');
   const confirmCancelBtn = document.getElementById('confirmCancel');
+  const tokenManage = document.getElementById('tokenManage');
 
   let editing = null; // { path, sha, folder }
   let tree = [];
+  let logsScrollY = 0;
   let selectedFiles = [];
   let placedMedia = 0;
   let homeConfig = { photos: [] };
@@ -227,14 +229,19 @@
       const mdPath = editing ? (editing.mdPath || folder + '/index.md') : folder + '/index.md';
       await githubPut(mdPath, md, message, false, editing && editing.sha);
       setStatus('成功！约 1 分钟后更新。', 'ok');
-      if (editing) loadPosts(true);
-      resetForm();
+      if (editing) {
+        resetForm();
+        await loadPosts(true);
+        showLogs(true);
+      } else {
+        resetForm();
+      }
     } catch (err) {
       setStatus('失败：' + err.message, 'err');
     } finally { publishBtn.disabled = false; }
   });
 
-  cancelBtn.addEventListener('click', function () { resetForm(); setStatus('已取消编辑'); });
+  cancelBtn.addEventListener('click', function () { resetForm(); showLogs(true); setStatus('已取消编辑'); });
 
   // ---------- 管理列表 ----------
 
@@ -256,12 +263,14 @@
 
   async function loadPosts(quiet) {
     if (!token()) { postListEl.innerHTML = '<li style="color:#b3261e;">未检测到令牌：请到“关于”页底部保存令牌后再点日志</li>'; return; }
+    if (tokenManage) tokenManage.style.display = 'none';
+    postListEl.innerHTML = '<li style="color:#999;padding:8px 0;">正在读取文章列表…</li>';
     if (!quiet) setStatus2('加载中…');
     try {
       tree = (await apiGet('git/trees/main?recursive=1')).tree || [];
       const blobs = tree.filter(function (b) { return b.type === 'blob' && isPostBlob(b.path); });
       postListEl.innerHTML = '';
-      if (!blobs.length) { setStatus2('还没有文章'); return; }
+      if (!blobs.length) { if (tokenManage) tokenManage.style.display = ''; setStatus2('还没有文章'); return; }
       const meta = await fetchPostMeta();
       const rows = blobs.map(function (b) {
         const m = meta ? meta.get(b.path) : null;
@@ -305,7 +314,8 @@
         postListEl.appendChild(li);
       });
       setStatus2(meta ? '共 ' + rows.length + ' 篇，按日期从新到旧' : '共 ' + rows.length + ' 篇（索引未取到，按名称排）');
-    } catch (err) { setStatus2('加载失败：' + err.message, 'err'); }
+      if (tokenManage) tokenManage.style.display = '';
+    } catch (err) { if (tokenManage) tokenManage.style.display = ''; setStatus2('加载失败：' + err.message, 'err'); }
   }
 
   async function fetchPostMeta() {
@@ -327,6 +337,7 @@
   }
 
   async function startEdit(blob) {
+    logsScrollY = window.scrollY || 0;
     setStatus2('读取文章…');
     try {
       const data = await apiGet('contents/' + encodePath(blob.path));
@@ -549,6 +560,20 @@
     tokenBox.style.display = (on || !tokenEl.value.trim()) ? '' : 'none';
   }
   function pickBlob(path) { return tree.find(function (b) { return b.type === 'blob' && b.path === path; }); }
+  function showLogs(restoreScroll) {
+    managePanel.hidden = false;
+    homePanel.hidden = true;
+    aboutPanel.hidden = true;
+    setWriteVisible(false);
+    document.querySelectorAll('#moduleNav button').forEach(function (b) { b.classList.remove('active'); });
+    const lb = document.querySelector('#moduleNav button[data-module="logs"]');
+    if (lb) lb.classList.add('active');
+    moduleHint.textContent = '编辑或删除旧文';
+    window.setTimeout(function () {
+      if (restoreScroll && logsScrollY > 0) window.scrollTo(0, logsScrollY);
+      else window.scrollTo(0, 0);
+    }, 40);
+  }
   document.querySelectorAll('#moduleNav button').forEach(function (btn) {
     btn.addEventListener('click', async function () {
       const m = btn.dataset.module;
