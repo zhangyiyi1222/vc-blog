@@ -43,15 +43,15 @@
 </head>
 <body>
   <div class="editor-wrap">
-    <h1 class="editor-title">写一篇</h1>
+    <h1 class="editor-title">落笔</h1>
     <p class="editor-note">填完点发布，约 1 分钟后网站自动更新。</p>
     <div id="moduleNav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
-      <button class="btn btn-primary" type="button" data-module="write">写一篇</button>
-      <button class="btn" type="button" data-module="logs">日志管理</button>
-      <button class="btn" type="button" data-module="about">关于页</button>
-      <button class="btn" type="button" data-module="home">首页文字</button>
-      <button class="btn" type="button" data-module="photos">首页照片</button>
-      <button class="btn" type="button" data-module="category">分类</button>
+      <button class="btn btn-primary" type="button" data-module="write">落笔</button>
+      <button class="btn" type="button" data-module="logs">日志</button>
+      <button class="btn" type="button" data-module="about">关于</button>
+      <button class="btn" type="button" data-module="home">首页</button>
+      <button class="btn" type="button" data-module="photos">相片</button>
+      <button class="btn" type="button" data-module="category">门类</button>
     </div>
     <p class="hint" id="moduleHint">选择要管理的栏目：日志、关于页、首页文字、首页照片、分类。</p>
 
@@ -88,6 +88,7 @@
     <div class="field">
       <label for="body">正文（空行分段）</label>
       <button type="button" class="btn" id="noteBtn" style="margin-bottom:6px;font-size:.8rem;">＋ 插入小字注释</button>
+      <button type="button" class="btn" id="quoteBtn" style="margin-bottom:6px;font-size:.8rem;">＋ 插入一段引言</button>
       <button type="button" class="btn" id="mediaBtn" style="margin-bottom:6px;font-size:.8rem;">在光标处插入所选图片/视频</button>
       <textarea id="body" placeholder="想写点什么……"></textarea>
     </div>
