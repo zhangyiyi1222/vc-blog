@@ -15,6 +15,7 @@
   const titleEl = document.getElementById('title');
   const dateEl = document.getElementById('date');
   const categoryEl = document.getElementById('category');
+  const newCategoryEl = document.getElementById('newCategory');
   const bodyEl = document.getElementById('body');
   const filesEl = document.getElementById('files');
   const fileListEl = document.getElementById('fileList');
@@ -152,7 +153,7 @@
   publishBtn.addEventListener('click', async function () {
     const t = token();
     const title = titleEl.value.trim();
-    const category = categoryEl.value.trim();
+    const category = newCategoryEl.value.trim() || categoryEl.value.trim();
     const body = bodyEl.value.trim();
     const date = dateEl.value;
     if (!t) { setStatus('请先填写 GitHub 令牌'); return; }
@@ -191,6 +192,8 @@
     publishBtn.disabled = true;
 
     try {
+      let finalBody = body;
+      const tailMedia = [];
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
         if (f.size > 25 * 1024 * 1024) throw new Error(f.name + ' 超过 25MB');
@@ -198,12 +201,19 @@
         const data = await readAsDataURL(f);
         const name = 'media-' + Date.now() + '-' + (i + 1) + '.' + fileExt(f.name);
         await githubPut(folder + '/' + name, data.split(',')[1], message, true);
-        mediaLines.push(f.type.indexOf('video') === 0
+        const line = f.type.indexOf('video') === 0
           ? '{{< video src="' + name + '" >}}'
-          : '![' + title + '](' + name + ')');
+          : '![' + title + '](' + name + ')';
+        const token = '[[IMG-' + (i + 1) + ']]';
+        if (finalBody.indexOf(token) >= 0) {
+          finalBody = finalBody.replace(token, line);
+        } else {
+          tailMedia.push(line);
+        }
       }
       setStatus('写入文章…');
-      const md = buildMarkdown(title, date, category, body, mediaLines);
+      const finalText = finalBody + (tailMedia.length ? '\n\n' + tailMedia.join('\n\n') + '\n' : '');
+      const md = buildMarkdown(title, date, category, finalText, []);
       await githubPut(folder + '/index.md', md, message, false, editing && editing.sha);
       setStatus('成功！约 1 分钟后更新。', 'ok');
       if (editing) loadPosts(true);
@@ -349,14 +359,28 @@
   }
 
   filesEl.addEventListener('change', function () {
+  const files = Array.prototype.slice.call(filesEl.files);
+  fileListEl.textContent = files.length
+    ? files.map(function (f) { return f.name + '（' + Math.round(f.size / 1024) + ' KB）'; }).join('；')
+    : '';
+  });
+
   const noteBtn = document.getElementById('noteBtn');
   if (noteBtn) noteBtn.addEventListener('click', function () {
     bodyEl.value += (bodyEl.value ? '\n\n' : '') + '{{< note >}}在这里写小字注释{{< /note >}}' + '\n';
     bodyEl.focus();
   });
-    const files = Array.prototype.slice.call(filesEl.files);
-    fileListEl.textContent = files.length
-      ? files.map(function (f) { return f.name + '（' + Math.round(f.size / 1024) + ' KB）'; }).join('；')
-      : '';
+
+  const mediaBtn = document.getElementById('mediaBtn');
+  if (mediaBtn) mediaBtn.addEventListener('click', function () {
+    const n = filesEl.files.length;
+    if (!n) { setStatus('请先选择图片/视频再点插入', 'err'); return; }
+    const tokens = [];
+    for (let i = 1; i <= n; i++) tokens.push('[[IMG-' + i + ']]');
+    const insert = (bodyEl.value ? '\n\n' : '') + tokens.join('\n\n') + '\n';
+    const pos = bodyEl.selectionStart == null ? bodyEl.value.length : bodyEl.selectionStart;
+    bodyEl.value = bodyEl.value.slice(0, pos) + insert + bodyEl.value.slice(bodyEl.selectionEnd == null ? pos : bodyEl.selectionEnd);
+    bodyEl.focus();
+    setStatus('已插入占位符：图片会出现在这里');
   });
 })();
