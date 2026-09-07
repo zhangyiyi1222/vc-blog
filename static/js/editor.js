@@ -262,9 +262,20 @@
   }
 
   async function loadPosts(quiet) {
+  function skeletonRows(n) {
+    var html = '';
+    for (var i = 0; i < n; i++) {
+      html += '<li style="padding:11px 0;border-bottom:1px solid #f2f2f2;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;">'
+        + '<span style="display:block;width:82px;height:11px;background:#e9e4db;"></span>'
+        + '<span style="display:block;width:46px;height:21px;background:#e9e4db;"></span></div>'
+        + '<span style="display:block;height:13px;width:70%;background:#f0ece4;"></span></li>';
+    }
+    return html;
+  }
     if (!token()) { postListEl.innerHTML = '<li style="color:#b3261e;">未检测到令牌：请到“关于”页底部保存令牌后再点日志</li>'; return; }
     if (tokenManage) tokenManage.style.display = 'none';
-    postListEl.innerHTML = '<li style="color:#999;padding:8px 0;">正在读取文章列表…</li>';
+    postListEl.innerHTML = skeletonRows(8);
     if (!quiet) setStatus2('加载中…');
     try {
       tree = (await apiGet('git/trees/main?recursive=1')).tree || [];
