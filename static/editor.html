@@ -37,7 +37,8 @@
     #postList li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f2f2f2; font-size: .9rem; }
     #postList a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #postList button { font: inherit; font-size: .8rem; border: 1px solid #ccc; background: #fff; padding: 4px 10px; cursor: pointer; }
-    #moduleNav button { flex: 1 1 30%; min-width: 0; padding: 10px 6px; }
+    #moduleNav { flex-wrap: nowrap !important; gap: 4px; }
+    #moduleNav button { flex: 1 1 0; min-width: 0; font-size: .88rem; padding: 9px 2px; white-space: nowrap; }
     #fileList { white-space: normal; }
   </style>
 </head>
@@ -47,11 +48,10 @@
     <p class="editor-note">填完点发布，约 1 分钟后网站自动更新。</p>
     <div id="moduleNav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
       <button class="btn btn-primary" type="button" data-module="write">落笔</button>
-      <button class="btn" type="button" data-module="logs">日志</button>
-      <button class="btn" type="button" data-module="about">关于</button>
       <button class="btn" type="button" data-module="home">首页</button>
-      <button class="btn" type="button" data-module="photos">相片</button>
+      <button class="btn" type="button" data-module="logs">日志</button>
       <button class="btn" type="button" data-module="category">门类</button>
+      <button class="btn" type="button" data-module="about">关于</button>
     </div>
     <p class="hint" id="moduleHint">选择要管理的栏目：日志、关于页、首页文字、首页照片、分类。</p>
 
@@ -102,20 +102,11 @@
     <button class="btn btn-primary" id="publish">发布</button>
     <button class="btn" id="cancelEdit" hidden type="button">取消编辑</button>
     <p class="status" id="status"></p>
-
-    <button class="btn" id="manageToggle" type="button">管理已发布文章</button>
-    <button class="btn" id="refreshBtn" type="button">刷新列表</button>
     <div id="managePanel" hidden>
       <p class="hint">点“编辑”可改文章；点“删除”会删掉整篇（含图片/视频）。删除前会先跟你确认。</p>
       <ul id="postList" style="list-style:none;padding:0;margin:0;"></ul>
     </div>
     <p class="status" id="status2"></p>
-    <div id="photoPanel" hidden style="margin-top:14px;">
-      <p class="hint">首页相片会按顺序展示。先选照片再点上传。</p>
-      <input type="file" id="photoInput" accept="image/*" multiple>
-      <button class="btn btn-primary" id="photoUpload" type="button" style="margin-top:8px;">上传到首页</button>
-      <div id="photoGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
-    </div>
     <button class="btn" id="tokenBtn" hidden type="button">设置 / 修改令牌</button>
   </div>
 

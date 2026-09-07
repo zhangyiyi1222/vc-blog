@@ -22,7 +22,6 @@
   const publishBtn = document.getElementById('publish');
   const cancelBtn = document.getElementById('cancelEdit');
   const statusEl = document.getElementById('status');
-  const manageToggle = document.getElementById('manageToggle');
   const managePanel = document.getElementById('managePanel');
   const postListEl = document.getElementById('postList');
   const status2El = document.getElementById('status2');
@@ -231,12 +230,6 @@
   cancelBtn.addEventListener('click', function () { resetForm(); setStatus('已取消编辑'); });
 
   // ---------- 管理列表 ----------
-  manageToggle.addEventListener('click', function () {
-    managePanel.hidden = !managePanel.hidden;
-    if (!managePanel.hidden) loadPosts();
-  });
-  const refreshBtn = document.getElementById('refreshBtn');
-  if (refreshBtn) refreshBtn.addEventListener('click', function () { loadPosts(false); });
 
   function postPathToUrl(p) {
     if (p.endsWith('/index.md')) {
@@ -262,34 +255,6 @@
       const blobs = tree.filter(function (b) { return b.type === 'blob' && isPostBlob(b.path); });
       blobs.sort(function (a, b) { return b.path.localeCompare(a.path); });
       postListEl.innerHTML = '';
-      const aboutBlob = tree.find(function (b) { return b.type === 'blob' && b.path === 'content/about.md'; });
-      if (aboutBlob) {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.textContent = '关于页面';
-        a.href = 'https://zhangzhongwei.top/about/';
-        a.target = '_blank';
-        li.appendChild(a);
-        const edit = document.createElement('button');
-        edit.textContent = '编辑';
-        edit.addEventListener('click', function () { startEdit(aboutBlob); });
-        li.appendChild(edit);
-        postListEl.appendChild(li);
-      }
-      const siteBlob = tree.find(function (b) { return b.type === 'blob' && b.path === 'data/site.json'; });
-      if (siteBlob) {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.textContent = '首页问候与小字';
-        a.href = 'https://zhangzhongwei.top/';
-        a.target = '_blank';
-        li.appendChild(a);
-        const edit = document.createElement('button');
-        edit.textContent = '编辑';
-        edit.addEventListener('click', function () { startEdit(siteBlob); });
-        li.appendChild(edit);
-        postListEl.appendChild(li);
-      }
       if (!blobs.length) { return; }
       blobs.forEach(function (b) {
         const li = document.createElement('li');
@@ -415,56 +380,6 @@
     placedMedia++;
     setStatus('已插入第 ' + placedMedia + ' 个图片占位符');
   });
-  const photoPanel = document.getElementById('photoPanel');
-  const photoInput = document.getElementById('photoInput');
-  const photoGrid = document.getElementById('photoGrid');
-  const photoUploadBtn = document.getElementById('photoUpload');
-  async function loadHomePhotos() {
-    if (!token()) { setStatus('请先填写令牌', 'err'); return; }
-    tree = (await apiGet('git/trees/main?recursive=1')).tree || [];
-    const cfg = await apiGet('contents/data/home.json');
-    const conf = JSON.parse(base64Decode(cfg.content));
-    homeConfig = conf; homeConfigSha = cfg.sha;
-    photoGrid.innerHTML = '';
-    conf.photos.forEach(function (name) {
-      const wrap = document.createElement('div');
-      const img = document.createElement('img');
-      img.src = 'https://raw.githubusercontent.com/' + USER + '/' + REPO + '/main/static/img/home/' + encodeURIComponent(name);
-      img.style.cssText = 'width:86px;height:64px;object-fit:cover;display:block;border:1px solid #eee;';
-      const rm = document.createElement('button');
-      rm.textContent = '移除';
-      rm.style.fontSize = '.75rem';
-      rm.addEventListener('click', function () { deleteHomePhoto(name); });
-      wrap.appendChild(img); wrap.appendChild(rm); photoGrid.appendChild(wrap);
-    });
-    setStatus('首页相片共 ' + conf.photos.length + ' 张');
-  }
-  async function saveHomeConfig() {
-    await githubPut('data/home.json', JSON.stringify(homeConfig, null, 2), '更新首页相片', false, homeConfigSha);
-    const fresh = await apiGet('contents/data/home.json'); homeConfigSha = fresh.sha;
-  }
-  async function deleteHomePhoto(name) {
-    if (!confirm('从首页移除这张相片？（原文件也删除）')) return;
-    const blob = tree.find(function (b) { return b.type === 'blob' && b.path === 'static/img/home/' + name; });
-    if (blob) await githubDelete(blob.path, blob.sha);
-    homeConfig.photos = homeConfig.photos.filter(function (n) { return n !== name; });
-    await saveHomeConfig(); await loadHomePhotos();
-  }
-  if (photoUploadBtn) photoUploadBtn.addEventListener('click', async function () {
-    if (!token()) { setStatus('请先填写令牌', 'err'); return; }
-    photoUploadBtn.disabled = true;
-    try {
-      for (let i = 0; i < photoInput.files.length; i++) {
-        const f = photoInput.files[i];
-        const data = await readAsDataURL(f);
-        const name = 'home-' + Date.now() + '-' + (i + 1) + '.' + fileExt(f.name);
-        await githubPut('static/img/home/' + name, data.split(',')[1], '上传首页相片', true);
-        homeConfig.photos.push(name);
-      }
-      await saveHomeConfig(); photoInput.value = ''; await loadHomePhotos();
-    } catch (err) { setStatus('相片上传失败：' + err.message, 'err'); }
-    finally { photoUploadBtn.disabled = false; }
-  });
   const moduleHint = document.getElementById('moduleHint');
   const writeControls = document.querySelectorAll('.field, #publish, #cancelEdit');
   function setWriteVisible(on) {
@@ -476,19 +391,18 @@
     btn.addEventListener('click', async function () {
       const m = btn.dataset.module;
       managePanel.hidden = true;
-      photoPanel.hidden = true;
       if (m === 'write') { setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
       if (!token()) { setWriteVisible(true); moduleHint.textContent = '请先填写并保存令牌'; return; }
       if (m === 'logs') { setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '日志：点编辑改旧文章，点删除整篇删除。'; return; }
       if (m === 'category') { setWriteVisible(false); moduleHint.textContent = '写一篇或编辑文章时，在“或输入新分类”里填新名字即可添加分类；分类页会自动生成。'; return; }
-      if (m === 'photos') { setWriteVisible(false); managePanel.hidden = true; photoPanel.hidden = false; moduleHint.textContent = '相片：选择相片后点“上传到首页”，点“移除”可删。'; await loadHomePhotos(); return; }
       if (m === 'about' || m === 'home') {
-        await loadPosts(true);
-        const target = m === 'about' ? pickBlob('content/about.md') : pickBlob('data/site.json');
-        if (target) { setWriteVisible(true); await startEdit(target); moduleHint.textContent = m === 'about' ? '正在编辑关于页，改完点保存修改。' : '正在编辑首页大字/小字/页脚。'; }
+        const path = m === 'about' ? 'content/about.md' : 'data/site.json';
+        setWriteVisible(true);
+        await startEdit({ path: path });
+        moduleHint.textContent = m === 'about' ? '正在编辑关于页，改完点保存修改。' : '正在编辑首页大字/小字/页脚。';
         return;
       }
     });
   });
-  if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = true; moduleHint.textContent = '选择要管理的栏目：日志、关于、首页、相片、门类。'; }
+  if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = true; moduleHint.textContent = '选择要管理的栏目：落笔、首页、日志、门类、关于。'; }
 })();
