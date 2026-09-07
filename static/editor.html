@@ -43,7 +43,7 @@
     <h1 class="editor-title">写一篇</h1>
     <p class="editor-note">填完点发布，约 1 分钟后网站自动更新。</p>
 
-    <div class="token-box">
+    <div class="token-box" id="tokenBox">
       <div class="field">
         <label for="token">GitHub 令牌（只需填一次，只存在这台手机）</label>
         <input type="text" id="token" placeholder="github_pat_… 或 ghp_…" autocomplete="off">
@@ -95,6 +95,7 @@
       <ul id="postList" style="list-style:none;padding:0;margin:0;"></ul>
     </div>
     <p class="status" id="status2"></p>
+    <button class="btn" id="tokenBtn" hidden type="button">设置 / 修改令牌</button>
   </div>
 
   <script src="/js/editor.js" defer></script>

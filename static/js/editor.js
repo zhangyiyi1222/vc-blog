@@ -10,6 +10,8 @@
   const TOKEN_KEY = 'zzw-editor-token';
 
   const tokenEl = document.getElementById('token');
+  const tokenBox = document.getElementById('tokenBox');
+  const tokenBtn = document.getElementById('tokenBtn');
   const titleEl = document.getElementById('title');
   const dateEl = document.getElementById('date');
   const categoryEl = document.getElementById('category');
@@ -29,6 +31,21 @@
 
   try { const s = localStorage.getItem(TOKEN_KEY); if (s) tokenEl.value = s; } catch (e) {}
   dateEl.value = new Date().toISOString().slice(0, 10);
+
+  function syncTokenUI() {
+    tokenBox.hidden = !!tokenEl.value.trim();
+    tokenBtn.hidden = !tokenEl.value.trim();
+  }
+  syncTokenUI();
+  if (tokenEl.value.trim()) { managePanel.hidden = false; loadPosts(true); }
+  tokenEl.addEventListener('change', function () {
+    try { localStorage.setItem(TOKEN_KEY, tokenEl.value.trim()); } catch (e) {}
+    syncTokenUI();
+    if (tokenEl.value.trim()) { managePanel.hidden = false; loadPosts(false); }
+  });
+  tokenBtn.addEventListener('click', function () {
+    tokenBox.hidden = !tokenBox.hidden;
+  });
 
   function setStatus(text, type, el) {
     const target = el || statusEl;
