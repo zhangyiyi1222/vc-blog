@@ -32,6 +32,7 @@
     .status.ok { color: #2e7d32; }
     .status.err { color: #b3261e; }
     .hint { font-size: .8rem; color: #999; }
+    .hint, .editor-note { display: none !important; }
     #manageToggle { margin-top: 12px; }
     #managePanel { margin-top: 16px; border-top: 1px solid #eee; padding-top: 14px; }
     #postList li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f2f2f2; font-size: .9rem; }
@@ -47,7 +48,6 @@
 <body>
   <div class="editor-wrap">
     <h1 class="editor-title">落笔</h1>
-    <p class="editor-note">填完点发布，约 1 分钟后网站自动更新。</p>
     <div id="moduleNav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
       <button class="btn btn-primary" type="button" data-module="write">落笔</button>
       <button class="btn" type="button" data-module="home">首页</button>
@@ -62,7 +62,6 @@
       <div style="margin-bottom:10px;"><label>页脚文字</label><input type="text" id="homeFooter"></div>
       <button class="btn btn-primary" id="saveHomeBtn" type="button">保存文字</button>
       <hr style="margin:16px 0;border:0;border-top:1px solid #eee;">
-      <p class="hint">首页照片：先选图，再点上传。</p>
       <input type="file" id="photoInput" accept="image/*" multiple>
       <button class="btn" id="photoUpload" type="button" style="margin-top:6px;">上传相片</button>
       <div id="photoGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
@@ -72,7 +71,6 @@
         <label for="token">GitHub 令牌（只需填一次，只存在这台手机）</label>
         <input type="text" id="token" placeholder="github_pat_… 或 ghp_…" autocomplete="off">
       </div>
-      <p class="hint">令牌需要仓库 Contents 的读写权限，忘了就删掉重新生成。生成方法见发布说明。</p>
     </div>
 
     <div class="field">
@@ -114,7 +112,6 @@
     <button class="btn" id="cancelEdit" hidden type="button">取消编辑</button>
     <p class="status" id="status"></p>
     <div id="managePanel" hidden>
-      <p class="hint">点“编辑”可改文章；点“删除”会删掉整篇（含图片/视频）。删除前会先跟你确认。</p>
       <ul id="postList" style="list-style:none;padding:0;margin:0;"></ul>
     </div>
     <p class="status" id="status2"></p>
