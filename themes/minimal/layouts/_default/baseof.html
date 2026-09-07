@@ -14,8 +14,9 @@
     })();
   </script>
   <link rel="stylesheet" href="{{ "css/main.css" | relURL }}?v={{ site.Params.cssv }}">
-  <link rel="icon" type="image/png" href="{{ "img/icon-32.png" | relURL }}">
-  <link rel="apple-touch-icon" href="{{ "img/apple-touch-icon.png" | relURL }}">
+  <link rel="icon" type="image/png" href="{{ "img/site-icon-32.png" | relURL }}">
+  <link rel="apple-touch-icon" href="{{ "img/site-icon-180.png" | relURL }}">
+  <link rel="manifest" href="{{ "site.webmanifest" | relURL }}">
   {{ block "head" . }}{{ end }}
 </head>
 <body{{ if .IsHome }} class="is-home"{{ end }}>
