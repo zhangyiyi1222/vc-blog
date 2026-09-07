@@ -457,8 +457,14 @@
       managePanel.hidden = true;
       homePanel.hidden = true;
       if (m === 'write') { setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
-      if (!token()) { setWriteVisible(true); moduleHint.textContent = '请先填写并保存令牌'; return; }
-      if (m === 'logs') { setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '日志：点编辑改旧文章，点删除整篇删除。'; return; }
+      if (!token()) {
+        setWriteVisible(true);
+        tokenBox.hidden = false; tokenBtn.hidden = true;
+        moduleHint.textContent = '请先粘贴 GitHub 令牌，然后点一下页面空白处保存';
+        setStatus('未检测到令牌', 'err');
+        return;
+      }
+      if (m === 'logs') { setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; return; }
       if (m === 'home') { setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
       if (m === 'about') {
         setWriteVisible(true);
