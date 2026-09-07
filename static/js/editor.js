@@ -248,7 +248,7 @@
   }
 
   async function loadPosts(quiet) {
-    if (!token()) { setStatus2('请先填 GitHub 令牌再管理', 'err'); return; }
+    if (!token()) { postListEl.innerHTML = '<li style="color:#b3261e;">未检测到令牌：请到“关于”页底部保存令牌后再点日志</li>'; return; }
     if (!quiet) setStatus2('加载中…');
     try {
       tree = (await apiGet('git/trees/main?recursive=1')).tree || [];
@@ -410,7 +410,6 @@
     setStatus('令牌已保存');
     await loadAbout();
   });
-  const pageTitle = document.getElementById('pageTitle');
   const homePanel = document.getElementById('homePanel');
   const homeHelloEl = document.getElementById('homeHello');
   const homeTaglineEl = document.getElementById('homeTagline');
@@ -482,21 +481,22 @@
   document.querySelectorAll('#moduleNav button').forEach(function (btn) {
     btn.addEventListener('click', async function () {
       const m = btn.dataset.module;
+      document.querySelectorAll('#moduleNav button').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
       managePanel.hidden = true;
       homePanel.hidden = true;
       aboutPanel.hidden = true;
-      if (m === 'write') { pageTitle.textContent = '落笔'; setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
-      if (m === 'about') { pageTitle.textContent = '关于'; setWriteVisible(false); aboutPanel.hidden = false; await loadAbout(); moduleHint.textContent = '关于'; return; }
+      if (m === 'write') { setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
+      if (m === 'about') { setWriteVisible(false); aboutPanel.hidden = false; await loadAbout(); moduleHint.textContent = '关于'; return; }
       if (!token()) {
         setWriteVisible(true);
-        pageTitle.textContent = '设置令牌';
         tokenBox.hidden = false; tokenBtn.hidden = true;
         moduleHint.textContent = '请先粘贴 GitHub 令牌，然后点一下页面空白处保存';
         setStatus('未检测到令牌', 'err');
         return;
       }
-      if (m === 'logs') { pageTitle.textContent = '日志'; setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; return; }
-      if (m === 'home') { pageTitle.textContent = '首页'; setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
+      if (m === 'logs') { setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; return; }
+      if (m === 'home') { setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
     });
   });
   if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = true; moduleHint.textContent = '选择要管理的栏目：落笔、首页、日志、门类、关于。'; }

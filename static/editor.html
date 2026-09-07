@@ -42,14 +42,14 @@
     #homePanel label { display:block; font-size:.85rem; color:#555; margin-bottom:4px; }
     #homePanel input[type="text"] { width:100%; box-sizing:border-box; font:inherit; color:#333; border:1px solid #ddd; padding:9px 12px; }
     #moduleNav button { flex: 1 1 0; min-width: 0; font-size: .88rem; padding: 9px 2px; white-space: nowrap; }
+    #moduleNav button.active { background: #111; color: #fff; border-color: #111; }
     #fileList { white-space: normal; }
   </style>
 </head>
 <body>
   <div class="editor-wrap">
-    <h1 class="editor-title" id="pageTitle">管理台</h1>
     <div id="moduleNav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
-      <button class="btn btn-primary" type="button" data-module="write">落笔</button>
+      <button class="btn" type="button" data-module="write">落笔</button>
       <button class="btn" type="button" data-module="home">首页</button>
       <button class="btn" type="button" data-module="logs">日志</button>
       <button class="btn" type="button" data-module="about">关于</button>
