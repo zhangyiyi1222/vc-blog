@@ -500,4 +500,6 @@
     });
   });
   if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = true; moduleHint.textContent = '选择要管理的栏目：落笔、首页、日志、门类、关于。'; }
+  const writeBtn = document.querySelector('#moduleNav button[data-module="write"]');
+  if (writeBtn) writeBtn.click();
 })();
