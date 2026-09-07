@@ -38,6 +38,8 @@
     #postList a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #postList button { font: inherit; font-size: .8rem; border: 1px solid #ccc; background: #fff; padding: 4px 10px; cursor: pointer; }
     #moduleNav { flex-wrap: nowrap !important; gap: 4px; }
+    #homePanel label { display:block; font-size:.85rem; color:#555; margin-bottom:4px; }
+    #homePanel input[type="text"] { width:100%; box-sizing:border-box; font:inherit; color:#333; border:1px solid #ddd; padding:9px 12px; }
     #moduleNav button { flex: 1 1 0; min-width: 0; font-size: .88rem; padding: 9px 2px; white-space: nowrap; }
     #fileList { white-space: normal; }
   </style>
@@ -50,11 +52,21 @@
       <button class="btn btn-primary" type="button" data-module="write">落笔</button>
       <button class="btn" type="button" data-module="home">首页</button>
       <button class="btn" type="button" data-module="logs">日志</button>
-      <button class="btn" type="button" data-module="category">门类</button>
       <button class="btn" type="button" data-module="about">关于</button>
     </div>
     <p class="hint" id="moduleHint">选择要管理的栏目：日志、关于页、首页文字、首页照片、分类。</p>
 
+    <div id="homePanel" hidden>
+      <div style="margin-bottom:10px;"><label>首页大字</label><input type="text" id="homeHello"></div>
+      <div style="margin-bottom:10px;"><label>首页小字</label><input type="text" id="homeTagline"></div>
+      <div style="margin-bottom:10px;"><label>页脚文字</label><input type="text" id="homeFooter"></div>
+      <button class="btn btn-primary" id="saveHomeBtn" type="button">保存文字</button>
+      <hr style="margin:16px 0;border:0;border-top:1px solid #eee;">
+      <p class="hint">首页照片：先选图，再点上传。</p>
+      <input type="file" id="photoInput" accept="image/*" multiple>
+      <button class="btn" id="photoUpload" type="button" style="margin-top:6px;">上传相片</button>
+      <div id="photoGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
+    </div>
     <div class="token-box" id="tokenBox">
       <div class="field">
         <label for="token">GitHub 令牌（只需填一次，只存在这台手机）</label>

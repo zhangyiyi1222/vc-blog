@@ -309,6 +309,8 @@
       cancelBtn.hidden = false;
       managePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setStatus('正在编辑：' + blob.path);
+      setWriteVisible(true);
+      managePanel.hidden = true;
     } catch (err) { setStatus('读取失败：' + err.message, 'err'); }
   }
 
@@ -381,6 +383,68 @@
     setStatus('已插入第 ' + placedMedia + ' 个图片占位符');
   });
   const moduleHint = document.getElementById('moduleHint');
+  const homePanel = document.getElementById('homePanel');
+  const homeHelloEl = document.getElementById('homeHello');
+  const homeTaglineEl = document.getElementById('homeTagline');
+  const homeFooterEl = document.getElementById('homeFooter');
+  const saveHomeBtn = document.getElementById('saveHomeBtn');
+  const photoInput = document.getElementById('photoInput');
+  const photoUploadBtn = document.getElementById('photoUpload');
+  const photoGrid = document.getElementById('photoGrid');
+  let siteConfigSha = null;
+  async function loadHomePanel() {
+    if (!token()) { setStatus('请先填写令牌', 'err'); return; }
+    const site = await apiGet('contents/data/site.json');
+    const cfg = JSON.parse(base64Decode(site.content));
+    homeHelloEl.value = cfg.hello || ''; homeTaglineEl.value = cfg.tagline || ''; homeFooterEl.value = cfg.footer || '';
+    siteConfigSha = site.sha;
+    const homeData = await apiGet('contents/data/home.json');
+    homeConfig = JSON.parse(base64Decode(homeData.content)); homeConfigSha = homeData.sha;
+    renderHomePhotos();
+  }
+  function renderHomePhotos() {
+    photoGrid.innerHTML = '';
+    (homeConfig.photos || []).forEach(function (name) {
+      const wrap = document.createElement('div');
+      const img = document.createElement('img');
+      img.src = 'https://raw.githubusercontent.com/' + USER + '/' + REPO + '/main/static/img/home/' + encodeURIComponent(name);
+      img.style.cssText = 'width:86px;height:64px;object-fit:cover;display:block;border:1px solid #eee;';
+      const rm = document.createElement('button'); rm.textContent = '移除'; rm.style.fontSize = '.75rem';
+      rm.addEventListener('click', function () { deleteHomePhoto(name); });
+      wrap.appendChild(img); wrap.appendChild(rm); photoGrid.appendChild(wrap);
+    });
+  }
+  async function saveSiteText() {
+    const cfg = { hello: homeHelloEl.value.trim(), tagline: homeTaglineEl.value.trim(), footer: homeFooterEl.value.trim() };
+    await githubPut('data/site.json', JSON.stringify(cfg, null, 2), '更新首页文字', false, siteConfigSha);
+    const fresh = await apiGet('contents/data/site.json'); siteConfigSha = fresh.sha;
+    setStatus('首页文字已保存', 'ok');
+  }
+  async function deleteHomePhoto(name) {
+    if (!confirm('从首页移除这张相片？')) return;
+    tree = (await apiGet('git/trees/main?recursive=1')).tree || [];
+    const blob = tree.find(function (b) { return b.type === 'blob' && b.path === 'static/img/home/' + name; });
+    if (blob) await githubDelete(blob.path, blob.sha);
+    homeConfig.photos = homeConfig.photos.filter(function (n) { return n !== name; });
+    const fresh = await apiGet('contents/data/home.json'); homeConfigSha = fresh.sha;
+    await githubPut('data/home.json', JSON.stringify(homeConfig, null, 2), '更新首页相片', false, homeConfigSha);
+    const after = await apiGet('contents/data/home.json'); homeConfigSha = after.sha;
+    renderHomePhotos();
+  }
+  if (saveHomeBtn) saveHomeBtn.addEventListener('click', function () { saveSiteText(); });
+  if (photoUploadBtn) photoUploadBtn.addEventListener('click', async function () {
+    try {
+      for (let i = 0; i < photoInput.files.length; i++) {
+        const f = photoInput.files[i]; const data = await readAsDataURL(f);
+        const name = 'home-' + Date.now() + '-' + (i + 1) + '.' + fileExt(f.name);
+        await githubPut('static/img/home/' + name, data.split(',')[1], '上传首页相片', true);
+        homeConfig.photos.push(name);
+      }
+      const fresh = await apiGet('contents/data/home.json'); homeConfigSha = fresh.sha;
+      await githubPut('data/home.json', JSON.stringify(homeConfig, null, 2), '更新首页相片', false, homeConfigSha);
+      photoInput.value = ''; renderHomePhotos();
+    } catch (err) { setStatus('上传失败：' + err.message, 'err'); }
+  });
   const writeControls = document.querySelectorAll('.field, #publish, #cancelEdit');
   function setWriteVisible(on) {
     writeControls.forEach(function (el) { el.style.display = on ? '' : 'none'; });
@@ -391,15 +455,15 @@
     btn.addEventListener('click', async function () {
       const m = btn.dataset.module;
       managePanel.hidden = true;
+      homePanel.hidden = true;
       if (m === 'write') { setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
       if (!token()) { setWriteVisible(true); moduleHint.textContent = '请先填写并保存令牌'; return; }
       if (m === 'logs') { setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '日志：点编辑改旧文章，点删除整篇删除。'; return; }
-      if (m === 'category') { setWriteVisible(false); moduleHint.textContent = '写一篇或编辑文章时，在“或输入新分类”里填新名字即可添加分类；分类页会自动生成。'; return; }
-      if (m === 'about' || m === 'home') {
-        const path = m === 'about' ? 'content/about.md' : 'data/site.json';
+      if (m === 'home') { setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
+      if (m === 'about') {
         setWriteVisible(true);
-        await startEdit({ path: path });
-        moduleHint.textContent = m === 'about' ? '正在编辑关于页，改完点保存修改。' : '正在编辑首页大字/小字/页脚。';
+        await startEdit({ path: 'content/about.md' });
+        moduleHint.textContent = '正在编辑关于页，改完点保存修改。';
         return;
       }
     });
