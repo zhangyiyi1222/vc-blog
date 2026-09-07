@@ -42,6 +42,15 @@
   <div class="editor-wrap">
     <h1 class="editor-title">写一篇</h1>
     <p class="editor-note">填完点发布，约 1 分钟后网站自动更新。</p>
+    <div id="moduleNav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+      <button class="btn btn-primary" type="button" data-module="write">写一篇</button>
+      <button class="btn" type="button" data-module="logs">日志管理</button>
+      <button class="btn" type="button" data-module="about">关于页</button>
+      <button class="btn" type="button" data-module="home">首页文字</button>
+      <button class="btn" type="button" data-module="photos">首页照片</button>
+      <button class="btn" type="button" data-module="category">分类</button>
+    </div>
+    <p class="hint" id="moduleHint">选择要管理的栏目：日志、关于页、首页文字、首页照片、分类。</p>
 
     <div class="token-box" id="tokenBox">
       <div class="field">

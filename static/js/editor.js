@@ -43,6 +43,7 @@
     try { localStorage.setItem(TOKEN_KEY, tokenEl.value.trim()); } catch (e) {}
     syncTokenUI();
     if (tokenEl.value.trim()) { managePanel.hidden = false; loadPosts(false); }
+    if (tokenEl.value.trim()) setWriteVisible(false);
   });
   tokenBtn.addEventListener('click', function () {
     tokenBox.hidden = !tokenBox.hidden;
@@ -383,4 +384,29 @@
     bodyEl.focus();
     setStatus('已插入占位符：图片会出现在这里');
   });
+  const moduleHint = document.getElementById('moduleHint');
+  const writeControls = document.querySelectorAll('.field, #publish, #cancelEdit');
+  function setWriteVisible(on) {
+    writeControls.forEach(function (el) { el.style.display = on ? '' : 'none'; });
+    tokenBox.style.display = (on || !tokenEl.value.trim()) ? '' : 'none';
+  }
+  function pickBlob(path) { return tree.find(function (b) { return b.type === 'blob' && b.path === path; }); }
+  document.querySelectorAll('#moduleNav button').forEach(function (btn) {
+    btn.addEventListener('click', async function () {
+      const m = btn.dataset.module;
+      managePanel.hidden = false;
+      if (m === 'write') { setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
+      if (!token()) { setWriteVisible(true); moduleHint.textContent = '请先填写并保存令牌'; return; }
+      if (m === 'logs') { setWriteVisible(false); await loadPosts(true); moduleHint.textContent = '日志管理：点编辑改旧文章，点删除整篇删除。'; return; }
+      if (m === 'category') { setWriteVisible(false); moduleHint.textContent = '写一篇或编辑文章时，在“或输入新分类”里填新名字即可添加分类；分类页会自动生成。'; return; }
+      if (m === 'photos') { setWriteVisible(false); moduleHint.textContent = '首页照片管理即将上线；目前可先放照片到桌面“待发布”让我添加。'; return; }
+      if (m === 'about' || m === 'home') {
+        await loadPosts(true);
+        const target = m === 'about' ? pickBlob('content/about.md') : pickBlob('data/site.json');
+        if (target) { setWriteVisible(true); await startEdit(target); moduleHint.textContent = m === 'about' ? '正在编辑关于页，改完点保存修改。' : '正在编辑首页大字/小字/页脚。'; }
+        return;
+      }
+    });
+  });
+  if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = false; moduleHint.textContent = '选择要管理的栏目：日志、关于页、首页文字、首页照片、分类。'; }
 })();

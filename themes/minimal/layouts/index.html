@@ -10,9 +10,9 @@
 
 <section class="laundry" aria-label="照片">
   <div class="laundry-row">
-    {{- range $i := seq 11 -}}
-    <a class="laundry-frame" href="{{ printf "/img/home/%02d.jpg" $i }}" target="_blank" rel="noopener">
-      <img src="{{ printf "/img/home/%02d.jpg" $i }}" alt="" loading="lazy">
+    {{- range site.Data.home.photos -}}
+    <a class="laundry-frame" href="{{ printf "/img/home/%s" . }}" target="_blank" rel="noopener">
+      <img src="{{ printf "/img/home/%s" . }}" alt="" loading="lazy">
     </a>
     {{- end -}}
   </div>
