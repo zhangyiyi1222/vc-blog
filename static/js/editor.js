@@ -366,10 +366,6 @@
     bodyEl.focus();
   }
 
-  const noteBtn = document.getElementById('noteBtn');
-  if (noteBtn) noteBtn.addEventListener('click', function () {
-    insertAtCursor('{{< note >}}在这里写小字注释{{< /note >}}');
-  });
   const quoteBtn = document.getElementById('quoteBtn');
   if (quoteBtn) quoteBtn.addEventListener('click', function () {
     insertAtCursor('> 在这里写一句心里话');
