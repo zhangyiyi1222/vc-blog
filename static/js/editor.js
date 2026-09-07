@@ -38,7 +38,7 @@
 
   function syncTokenUI() {
     tokenBox.hidden = !!tokenEl.value.trim();
-    tokenBtn.hidden = !tokenEl.value.trim();
+    tokenBtn.hidden = true;
   }
   syncTokenUI();
   if (tokenEl.value.trim()) { managePanel.hidden = true; }
@@ -379,6 +379,7 @@
     setStatus('已插入第 ' + placedMedia + ' 个图片占位符');
   });
   const moduleHint = document.getElementById('moduleHint');
+  const pageTitle = document.getElementById('pageTitle');
   const homePanel = document.getElementById('homePanel');
   const homeHelloEl = document.getElementById('homeHello');
   const homeTaglineEl = document.getElementById('homeTagline');
@@ -452,19 +453,21 @@
       const m = btn.dataset.module;
       managePanel.hidden = true;
       homePanel.hidden = true;
-      if (m === 'write') { setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
+      if (m === 'write') { pageTitle.textContent = '落笔'; setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
       if (!token()) {
         setWriteVisible(true);
+        pageTitle.textContent = '设置令牌';
         tokenBox.hidden = false; tokenBtn.hidden = true;
         moduleHint.textContent = '请先粘贴 GitHub 令牌，然后点一下页面空白处保存';
         setStatus('未检测到令牌', 'err');
         return;
       }
-      if (m === 'logs') { setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; return; }
-      if (m === 'home') { setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
+      if (m === 'logs') { pageTitle.textContent = '日志'; setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; return; }
+      if (m === 'home') { pageTitle.textContent = '首页'; setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
       if (m === 'about') {
         setWriteVisible(true);
         await startEdit({ path: 'content/about.md' });
+        pageTitle.textContent = '关于';
         moduleHint.textContent = '正在编辑关于页，改完点保存修改。';
         return;
       }

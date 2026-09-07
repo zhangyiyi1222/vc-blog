@@ -38,7 +38,7 @@
     #postList li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f2f2f2; font-size: .9rem; }
     #postList a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #postList button { font: inherit; font-size: .8rem; border: 1px solid #ccc; background: #fff; padding: 4px 10px; cursor: pointer; }
-    #moduleNav { flex-wrap: nowrap !important; gap: 4px; }
+    #moduleNav { flex-wrap: nowrap !important; gap: 4px !important; margin-bottom: 10px !important; }
     #homePanel label { display:block; font-size:.85rem; color:#555; margin-bottom:4px; }
     #homePanel input[type="text"] { width:100%; box-sizing:border-box; font:inherit; color:#333; border:1px solid #ddd; padding:9px 12px; }
     #moduleNav button { flex: 1 1 0; min-width: 0; font-size: .88rem; padding: 9px 2px; white-space: nowrap; }
@@ -47,7 +47,7 @@
 </head>
 <body>
   <div class="editor-wrap">
-    <h1 class="editor-title">落笔</h1>
+    <h1 class="editor-title" id="pageTitle">管理台</h1>
     <div id="moduleNav" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
       <button class="btn btn-primary" type="button" data-module="write">落笔</button>
       <button class="btn" type="button" data-module="home">首页</button>
