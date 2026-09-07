@@ -25,6 +25,10 @@
   const managePanel = document.getElementById('managePanel');
   const postListEl = document.getElementById('postList');
   const status2El = document.getElementById('status2');
+  const confirmBox = document.getElementById('confirmBox');
+  const confirmMsg = document.getElementById('confirmMsg');
+  const confirmOkBtn = document.getElementById('confirmOk');
+  const confirmCancelBtn = document.getElementById('confirmCancel');
 
   let editing = null; // { path, sha, folder }
   let tree = [];
@@ -256,31 +260,70 @@
     try {
       tree = (await apiGet('git/trees/main?recursive=1')).tree || [];
       const blobs = tree.filter(function (b) { return b.type === 'blob' && isPostBlob(b.path); });
-      blobs.sort(function (a, b) { return b.path.localeCompare(a.path); });
       postListEl.innerHTML = '';
-      if (!blobs.length) { return; }
-      blobs.forEach(function (b) {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.textContent = b.path.split('/').pop() === 'index.md'
+      if (!blobs.length) { setStatus2('还没有文章'); return; }
+      const meta = await fetchPostMeta();
+      const rows = blobs.map(function (b) {
+        const m = meta ? meta.get(b.path) : null;
+        const fallback = b.path.split('/').pop() === 'index.md'
           ? b.path.slice('content/posts/'.length, -'/index.md'.length)
           : b.path.slice('content/posts/'.length, -'.md'.length);
-        a.href = 'https://zhangzhongwei.top' + postPathToUrl(b.path);
-        a.target = '_blank';
-        li.appendChild(a);
+        return { b: b, date: m && m.date ? m.date : '', title: m && m.title ? m.title : fallback };
+      });
+      rows.sort(function (x, y) {
+        if (!x.date && !y.date) return y.b.path.localeCompare(x.b.path);
+        if (!x.date) return 1;
+        if (!y.date) return -1;
+        return y.date.localeCompare(x.date);
+      });
+      rows.forEach(function (row) {
+        const li = document.createElement('li');
+        const top = document.createElement('div');
+        top.className = 'p-row';
+        const dt = document.createElement('span');
+        dt.className = 'p-date';
+        dt.textContent = row.date || '日期待补';
+        const btns = document.createElement('span');
+        btns.className = 'p-btns';
         const edit = document.createElement('button');
         edit.textContent = '编辑';
-        edit.addEventListener('click', function () { startEdit(b); });
+        edit.addEventListener('click', function () { startEdit(row.b); });
         const del = document.createElement('button');
         del.textContent = '删除';
         del.style.borderColor = '#d9a0a0';
-        del.addEventListener('click', function () { removePost(b); });
-        li.appendChild(edit);
-        li.appendChild(del);
+        del.addEventListener('click', function () { removePost(row.b); });
+        btns.appendChild(edit);
+        btns.appendChild(del);
+        top.appendChild(dt);
+        top.appendChild(btns);
+        const a = document.createElement('a');
+        a.textContent = row.title;
+        a.href = 'https://zhangzhongwei.top' + postPathToUrl(row.b.path);
+        a.target = '_blank';
+        li.appendChild(top);
+        li.appendChild(a);
         postListEl.appendChild(li);
       });
-      setStatus2('共 ' + blobs.length + ' 篇');
+      setStatus2(meta ? '共 ' + rows.length + ' 篇，按日期从新到旧' : '共 ' + rows.length + ' 篇（索引未取到，按名称排）');
     } catch (err) { setStatus2('加载失败：' + err.message, 'err'); }
+  }
+
+  async function fetchPostMeta() {
+    try {
+      const res = await fetch('./index.json', { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const arr = await res.json();
+      const meta = new Map();
+      if (Array.isArray(arr)) {
+        arr.forEach(function (e) {
+          var p = String(e.path || '');
+          if (!p) return;
+          if (p.indexOf('content/') !== 0) p = 'content/' + p;
+          meta.set(p, { date: String(e.date || '').slice(0, 10), title: String(e.title || '') });
+        });
+      }
+      return meta;
+    } catch (err) { return null; }
   }
 
   async function startEdit(blob) {
@@ -324,18 +367,36 @@
 
   }
 
+  function askConfirm(message) {
+    return new Promise(function (resolve) {
+      confirmMsg.textContent = message;
+      confirmBox.hidden = false;
+      function done(ok) {
+        confirmBox.hidden = true;
+        confirmOkBtn.removeEventListener('click', onOk);
+        confirmCancelBtn.removeEventListener('click', onCancel);
+        resolve(ok);
+      }
+      function onOk() { done(true); }
+      function onCancel() { done(false); }
+      confirmOkBtn.addEventListener('click', onOk);
+      confirmCancelBtn.addEventListener('click', onCancel);
+    });
+  }
+
   async function removePost(blob) {
-    if (!confirm('确定删除这篇吗？连同里面的图片/视频会一起删除，且不可恢复。')) return;
-    setStatus2('删除中…');
+    if (!(await askConfirm('确定删除这篇吗？连同里面的图片/视频会一起删除，且不可恢复。'))) return;
+    setStatus2('准备删除…');
     try {
       const prefix = blob.path.endsWith('/index.md') ? blob.path.slice(0, -'/index.md'.length) : '';
       const items = prefix
         ? tree.filter(function (b) { return b.type === 'blob' && b.path.indexOf(prefix + '/') === 0; })
         : [blob];
       for (let i = items.length - 1; i >= 0; i--) {
+        setStatus2('正在删除 ' + (items.length - i) + '/' + items.length + '…');
         await githubDelete(items[i].path, items[i].sha);
       }
-      setStatus2('已删除');
+      setStatus2('已删除，稍等约 1 分钟生效', 'ok');
       loadPosts(true);
     } catch (err) { setStatus2('删除失败：' + err.message, 'err'); }
   }

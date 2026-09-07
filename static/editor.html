@@ -36,15 +36,20 @@
     .hint, .editor-note { display: none !important; }
     #manageToggle { margin-top: 12px; }
     #managePanel { margin-top: 16px; border-top: 1px solid #eee; padding-top: 14px; }
-    #postList li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f2f2f2; font-size: .9rem; }
-    #postList a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #postList li { display: block; padding: 9px 0; border-bottom: 1px solid #f2f2f2; }
+    #postList a { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .92rem; }
     #postList button { font: inherit; font-size: .8rem; border: 1px solid #ccc; background: #fff; padding: 4px 10px; cursor: pointer; }
+    #postList .p-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 3px; }
+    #postList .p-date { font-size: .78rem; color: #999; }
+    #postList .p-btns { display: flex; gap: 6px; flex-shrink: 0; }
     #moduleNav { flex-wrap: nowrap !important; gap: 4px !important; margin-bottom: 10px !important; }
     #homePanel label { display:block; font-size:.85rem; color:#555; margin-bottom:4px; }
     #homePanel input[type="text"] { width:100%; box-sizing:border-box; font:inherit; color:#333; border:1px solid #ddd; padding:9px 12px; }
     #moduleNav button { flex: 1 1 0; min-width: 0; font-size: .88rem; padding: 9px 2px; white-space: nowrap; }
     #moduleNav button.active { background: #111; color: #fff; border-color: #111; }
     #fileList { white-space: normal; }
+    #confirmBox { display: flex; }
+    #confirmBox[hidden] { display: none !important; }
   </style>
 </head>
 <body>
@@ -127,7 +132,16 @@
     <button class="btn" id="tokenBtn" hidden type="button">设置 / 修改令牌</button>
   </div>
 
-  <script src="js/editor.js?v=20260908h" defer></script>
+  <script src="js/editor.js?v=20260908q" defer></script>
+  <div id="confirmBox" hidden style="position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.35);align-items:center;justify-content:center;">
+    <div style="background:#fff;max-width:320px;width:88%;padding:20px;border:1px solid #ddd;box-shadow:0 8px 30px rgba(0,0,0,.2);">
+      <p id="confirmMsg" style="margin:0 0 16px;line-height:1.6;font-size:.95rem;color:#333;"></p>
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button class="btn" type="button" id="confirmCancel" style="padding:8px 16px;">取消</button>
+        <button class="btn" type="button" id="confirmOk" style="padding:8px 16px;background:#b3261e;border-color:#b3261e;color:#fff;">删除</button>
+      </div>
+    </div>
+  </div>
   <script>
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       navigator.serviceWorker.register('/js/sw.js').catch(function () {});
