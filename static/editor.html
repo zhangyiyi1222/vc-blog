@@ -67,6 +67,13 @@
       <div id="photoGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
     </div>
     <div class="token-box" id="tokenBox">
+    <div id="aboutPanel" hidden>
+      <div><label>关于正文（支持 Markdown）</label><textarea id="aboutBody" style="width:100%;box-sizing:border-box;min-height:320px;font:inherit;color:#333;border:1px solid #ddd;padding:10px 12px;line-height:1.75;"></textarea></div>
+      <button class="btn btn-primary" id="saveAboutBtn" type="button">保存关于</button>
+      <hr style="margin:18px 0;border:0;border-top:1px solid #eee;">
+      <div><label>令牌（填写后点“保存令牌”）</label><input type="text" id="aboutToken" style="width:100%;box-sizing:border-box;font:inherit;color:#333;border:1px solid #ddd;padding:9px 12px;"></div>
+      <button class="btn" id="saveAboutToken" type="button" style="margin-top:6px;">保存令牌</button>
+    </div>
       <div class="field">
         <label for="token">GitHub 令牌（只需填一次，只存在这台手机）</label>
         <input type="text" id="token" placeholder="github_pat_… 或 ghp_…" autocomplete="off">

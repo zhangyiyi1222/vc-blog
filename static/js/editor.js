@@ -379,6 +379,37 @@
     setStatus('已插入第 ' + placedMedia + ' 个图片占位符');
   });
   const moduleHint = document.getElementById('moduleHint');
+  const aboutPanel = document.getElementById('aboutPanel');
+  const aboutBody = document.getElementById('aboutBody');
+  const saveAboutBtn = document.getElementById('saveAboutBtn');
+  const aboutToken = document.getElementById('aboutToken');
+  const saveAboutTokenBtn = document.getElementById('saveAboutToken');
+  let aboutHeader = ''; let aboutSha = null;
+  async function loadAbout() {
+    aboutToken.value = token();
+    if (!token()) { aboutBody.value = '请先在上方输入令牌并点“保存令牌”'; return; }
+    const data = await apiGet('contents/' + encodePath('content/about.md'));
+    const raw = base64Decode(data.content);
+    const i = raw.indexOf('---', 4);
+    aboutHeader = raw.slice(0, i + 3);
+    aboutBody.value = raw.slice(i + 3).trim();
+    aboutSha = data.sha;
+  }
+  if (saveAboutBtn) saveAboutBtn.addEventListener('click', async function () {
+    if (!token()) { setStatus('请先保存令牌', 'err'); return; }
+    try {
+      await githubPut('content/about.md', aboutHeader + '\n\n' + aboutBody.value.trim() + '\n', '修改关于页', false, aboutSha);
+      const fresh = await apiGet('contents/' + encodePath('content/about.md')); aboutSha = fresh.sha;
+      setStatus('关于页已保存', 'ok');
+    } catch (err) { setStatus('保存失败：' + err.message, 'err'); }
+  });
+  if (saveAboutTokenBtn) saveAboutTokenBtn.addEventListener('click', async function () {
+    const t = aboutToken.value.trim();
+    if (!t) { setStatus('令牌不能为空', 'err'); return; }
+    tokenEl.value = t; try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
+    setStatus('令牌已保存');
+    await loadAbout();
+  });
   const pageTitle = document.getElementById('pageTitle');
   const homePanel = document.getElementById('homePanel');
   const homeHelloEl = document.getElementById('homeHello');
@@ -453,7 +484,9 @@
       const m = btn.dataset.module;
       managePanel.hidden = true;
       homePanel.hidden = true;
+      aboutPanel.hidden = true;
       if (m === 'write') { pageTitle.textContent = '落笔'; setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
+      if (m === 'about') { pageTitle.textContent = '关于'; setWriteVisible(false); aboutPanel.hidden = false; await loadAbout(); moduleHint.textContent = '关于'; return; }
       if (!token()) {
         setWriteVisible(true);
         pageTitle.textContent = '设置令牌';
@@ -464,13 +497,6 @@
       }
       if (m === 'logs') { pageTitle.textContent = '日志'; setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; return; }
       if (m === 'home') { pageTitle.textContent = '首页'; setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
-      if (m === 'about') {
-        setWriteVisible(true);
-        await startEdit({ path: 'content/about.md' });
-        pageTitle.textContent = '关于';
-        moduleHint.textContent = '正在编辑关于页，改完点保存修改。';
-        return;
-      }
     });
   });
   if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = true; moduleHint.textContent = '选择要管理的栏目：落笔、首页、日志、门类、关于。'; }
