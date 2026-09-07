@@ -42,11 +42,10 @@
     tokenBtn.hidden = !tokenEl.value.trim();
   }
   syncTokenUI();
-  if (tokenEl.value.trim()) { managePanel.hidden = false; loadPosts(true); }
+  if (tokenEl.value.trim()) { managePanel.hidden = true; }
   tokenEl.addEventListener('change', function () {
     try { localStorage.setItem(TOKEN_KEY, tokenEl.value.trim()); } catch (e) {}
     syncTokenUI();
-    if (tokenEl.value.trim()) { managePanel.hidden = false; loadPosts(false); }
     if (tokenEl.value.trim()) setWriteVisible(false);
   });
   tokenBtn.addEventListener('click', function () {
@@ -476,11 +475,11 @@
   document.querySelectorAll('#moduleNav button').forEach(function (btn) {
     btn.addEventListener('click', async function () {
       const m = btn.dataset.module;
-      managePanel.hidden = false;
+      managePanel.hidden = true;
       photoPanel.hidden = true;
       if (m === 'write') { setWriteVisible(true); moduleHint.textContent = '填写并发布新日志，图片可插在文字中间。'; return; }
       if (!token()) { setWriteVisible(true); moduleHint.textContent = '请先填写并保存令牌'; return; }
-      if (m === 'logs') { setWriteVisible(false); await loadPosts(true); moduleHint.textContent = '日志管理：点编辑改旧文章，点删除整篇删除。'; return; }
+      if (m === 'logs') { setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '日志：点编辑改旧文章，点删除整篇删除。'; return; }
       if (m === 'category') { setWriteVisible(false); moduleHint.textContent = '写一篇或编辑文章时，在“或输入新分类”里填新名字即可添加分类；分类页会自动生成。'; return; }
       if (m === 'photos') { setWriteVisible(false); managePanel.hidden = true; photoPanel.hidden = false; moduleHint.textContent = '相片：选择相片后点“上传到首页”，点“移除”可删。'; await loadHomePhotos(); return; }
       if (m === 'about' || m === 'home') {
@@ -491,5 +490,5 @@
       }
     });
   });
-  if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = false; moduleHint.textContent = '选择要管理的栏目：日志、关于页、首页文字、首页照片、分类。'; }
+  if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = true; moduleHint.textContent = '选择要管理的栏目：日志、关于、首页、相片、门类。'; }
 })();
