@@ -1,5 +1,5 @@
 # 从头像生成苹果主屏幕图标与网站 favicon（居中裁成正方形）
-param([string]$Source = '')
+param([string]$Source = '', [string]$AdminSource = '')
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
@@ -31,4 +31,11 @@ New-SquareIcon $src (Join-Path $root 'static\img\apple-touch-icon.png') 180
 New-SquareIcon $src (Join-Path $root 'static\img\icon-32.png') 32
 New-SquareIcon $src (Join-Path $root 'static\img\icon-192.png') 192
 New-SquareIcon $src (Join-Path $root 'static\img\icon-512.png') 512
+if ($AdminSource) {
+  $adminDir = Join-Path $root 'static\img\admin'
+  New-Item -ItemType Directory -Force -Path $adminDir | Out-Null
+  New-SquareIcon $AdminSource (Join-Path $adminDir 'apple-touch-icon.png') 180
+  New-SquareIcon $AdminSource (Join-Path $adminDir 'icon-192.png') 192
+  New-SquareIcon $AdminSource (Join-Path $adminDir 'icon-512.png') 512
+}
 Write-Output '图标已生成'

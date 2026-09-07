@@ -46,7 +46,7 @@
 
   <footer class="site-footer container">
     <div class="footer-inner">
-      <p class="footer-copy">© zhangzhongwei</p>
+      <p class="footer-copy">{{ site.Data.site.footer | default "© zhangzhongwei" }}</p>
     </div>
   </footer>
   {{ block "footer" . }}{{ end }}

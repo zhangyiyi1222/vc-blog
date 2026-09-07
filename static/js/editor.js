@@ -117,8 +117,7 @@
     return '---\n' +
       'title: "' + title.replace(/"/g, '“') + '"\n' +
       'date: ' + dateTimeString(new Date(date + 'T12:00:00+08:00')) + '\n' +
-      'categories:\n' +
-      '  - ' + category + '\n' +
+      (category ? 'categories:\n' + '  - ' + category + '\n' : '') +
       'draft: false\n' +
       '---\n\n' + body + '\n' +
       (mediaLines.length ? '\n' + mediaLines.join('\n\n') + '\n' : '');
@@ -144,6 +143,30 @@
     if (!body) { setStatus('正文还没有内容', 'err'); return; }
     try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {}
 
+    if (editing && editing.mode === 'about') {
+      publishBtn.disabled = true;
+      try {
+        const md = buildMarkdown(title, date, '', body, []);
+        await githubPut(editing.path, md, '修改关于页', false, editing.sha);
+        setStatus('关于页已保存', 'ok');
+        loadPosts(true);
+        resetForm();
+      } catch (err) { setStatus('保存失败：' + err.message, 'err'); }
+      finally { publishBtn.disabled = false; }
+      return;
+    }
+    if (editing && editing.mode === 'sitejson') {
+      publishBtn.disabled = true;
+      try {
+        JSON.parse(body); // 简单校验
+        await githubPut(editing.path, body, '修改首页文案', false, editing.sha);
+        setStatus('首页文案已保存', 'ok');
+        loadPosts(true);
+        resetForm();
+      } catch (err) { setStatus('保存失败：' + err.message, 'err'); }
+      finally { publishBtn.disabled = false; }
+      return;
+    }
     const folder = editing ? editing.folder : 'content/posts/' + date + '-' + safeTitle(title);
     const message = (editing ? '修改：' : '发布：') + title;
     const files = Array.prototype.slice.call(filesEl.files);
@@ -180,6 +203,8 @@
     managePanel.hidden = !managePanel.hidden;
     if (!managePanel.hidden) loadPosts();
   });
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) refreshBtn.addEventListener('click', function () { loadPosts(false); });
 
   function postPathToUrl(p) {
     if (p.endsWith('/index.md')) {
@@ -205,7 +230,35 @@
       const blobs = tree.filter(function (b) { return b.type === 'blob' && isPostBlob(b.path); });
       blobs.sort(function (a, b) { return b.path.localeCompare(a.path); });
       postListEl.innerHTML = '';
-      if (!blobs.length) { postListEl.innerHTML = '<li>没有找到文章</li>'; return; }
+      const aboutBlob = tree.find(function (b) { return b.type === 'blob' && b.path === 'content/about.md'; });
+      if (aboutBlob) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.textContent = '关于页面';
+        a.href = 'https://zhangzhongwei.top/about/';
+        a.target = '_blank';
+        li.appendChild(a);
+        const edit = document.createElement('button');
+        edit.textContent = '编辑';
+        edit.addEventListener('click', function () { startEdit(aboutBlob); });
+        li.appendChild(edit);
+        postListEl.appendChild(li);
+      }
+      const siteBlob = tree.find(function (b) { return b.type === 'blob' && b.path === 'data/site.json'; });
+      if (siteBlob) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.textContent = '首页问候与小字';
+        a.href = 'https://zhangzhongwei.top/';
+        a.target = '_blank';
+        li.appendChild(a);
+        const edit = document.createElement('button');
+        edit.textContent = '编辑';
+        edit.addEventListener('click', function () { startEdit(siteBlob); });
+        li.appendChild(edit);
+        postListEl.appendChild(li);
+      }
+      if (!blobs.length) { return; }
       blobs.forEach(function (b) {
         const li = document.createElement('li');
         const a = document.createElement('a');
@@ -235,6 +288,15 @@
     try {
       const data = await apiGet('contents/' + encodePath(blob.path));
       const raw = base64Decode(data.content);
+      if (blob.path === 'data/site.json') {
+        titleEl.value = '首页问候与小字';
+        bodyEl.value = raw.trim();
+        editing = { path: blob.path, sha: data.sha, mode: 'sitejson' };
+        publishBtn.textContent = '保存修改';
+        cancelBtn.hidden = false;
+        setStatus('正在编辑首页文案，只改双引号里的字');
+        return;
+      }
       const fm = parseFrontMatter(raw);
       titleEl.value = fm.title;
       dateEl.value = fm.date;
@@ -245,7 +307,7 @@
         categoryEl.value = fm.category;
       }
       bodyEl.value = fm.body;
-      editing = { path: blob.path, sha: data.sha, folder: blob.path.slice(0, -'/index.md'.length) };
+      editing = { path: blob.path, sha: data.sha, mode: blob.path === 'content/about.md' ? 'about' : 'post', folder: blob.path.slice(0, -'/index.md'.length) };
       publishBtn.textContent = '保存修改';
       cancelBtn.hidden = false;
       managePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -270,6 +332,11 @@
   }
 
   filesEl.addEventListener('change', function () {
+  const noteBtn = document.getElementById('noteBtn');
+  if (noteBtn) noteBtn.addEventListener('click', function () {
+    bodyEl.value += (bodyEl.value ? '\n\n' : '') + '{{< note >}}在这里写小字注释{{< /note >}}' + '\n';
+    bodyEl.focus();
+  });
     const files = Array.prototype.slice.call(filesEl.files);
     fileListEl.textContent = files.length
       ? files.map(function (f) { return f.name + '（' + Math.round(f.size / 1024) + ' KB）'; }).join('；')

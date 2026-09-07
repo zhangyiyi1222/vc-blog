@@ -672,6 +672,14 @@ a:hover {
 }
 
 /* 引用块：左侧 3px 灰竖线 + 浅灰背景 + 楷体 */
+/* 正文中间的小字注释 */
+.post-note {
+  display: block;
+  color: #999999;
+  font-size: 0.85em;
+  margin: 0.5em 0;
+}
+
 .prose blockquote {
   margin: 1.8em 0;
   padding: 0.5em 1.3em;

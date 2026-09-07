@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>发布 · 张中伟</title>
   <link rel="manifest" href="/manifest-editor.webmanifest">
-  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/img/admin/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#ffffff">
@@ -74,6 +74,7 @@
 
     <div class="field">
       <label for="body">正文（空行分段）</label>
+      <button type="button" class="btn" id="noteBtn" style="margin-bottom:6px;font-size:.8rem;">＋ 插入小字注释</button>
       <textarea id="body" placeholder="想写点什么……"></textarea>
     </div>
 
@@ -88,6 +89,7 @@
     <p class="status" id="status"></p>
 
     <button class="btn" id="manageToggle" type="button">管理已发布文章</button>
+    <button class="btn" id="refreshBtn" type="button">刷新列表</button>
     <div id="managePanel" hidden>
       <p class="hint">点“编辑”可改文章；点“删除”会删掉整篇（含图片/视频）。删除前会先跟你确认。</p>
       <ul id="postList" style="list-style:none;padding:0;margin:0;"></ul>

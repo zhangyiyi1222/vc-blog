@@ -4,8 +4,8 @@
   {{- with site.Params.avatar -}}
   <img class="home-avatar" src="{{ . | relURL }}" alt="">
   {{- end -}}
-  <h1 class="home-hello">你好，我是 zhangzhongwei</h1>
-  <p class="home-tagline">认真生活，随手记录。</p>
+  <h1 class="home-hello">{{ site.Data.site.hello | default "你好，我是 zhangzhongwei" }}</h1>
+  <p class="home-tagline">{{ site.Data.site.tagline | default "认真生活，随手记录。" }}</p>
 </section>
 
 <section class="laundry" aria-label="照片">
