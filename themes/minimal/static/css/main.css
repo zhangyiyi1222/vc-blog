@@ -930,7 +930,7 @@ body.frame-c::before {
 }
 
 /* ===== 夜间模式 ===== */
-body.dark {
+html.dark {
   --bg: #1b1a18;
   --text: #d6d2ca;
   --muted: #8d887f;
@@ -941,24 +941,24 @@ body.dark {
   color: var(--text);
 }
 
-body.dark .nav-link { color: #c8c3ba; }
-body.dark .nav-link:hover,
-body.dark .nav-link.active { color: #f0ede6; }
-body.dark .theme-toggle { background: #262421; border-color: #45423d; color: #e6e1d8; }
-body.dark .theme-toggle:hover { background: #322f2b; border-color: #6d685f; }
-body.dark .home-tagline { color: #a09a90; }
-body.dark .home-avatar { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.45); }
-body.dark .prose blockquote { background: #211f1c; color: #cfc9c0; }
-body.dark .prose code { background: #2a2825; color: #e5e0d6; }
-body.dark .prose pre { background: #201f1c; border-color: #3a3732; }
-body.dark .search-box input[type="search"] { background: #23211f; color: var(--text); border-color: #4a463f; }
-body.dark .photo-cell { background: #262421; }
-body.dark .site-footer .corner::before,
-body.dark .site-footer .corner::after { background: #6e6960; }
-body.dark .head-corner::before,
-body.dark .head-corner::after { background: #d9d4ca; }
-body.dark .header-inner { border-bottom-color: #8a867e; }
-body.dark ::selection { background: #4d4942; }
+html.dark .nav-link { color: #c8c3ba; }
+html.dark .nav-link:hover,
+html.dark .nav-link.active { color: #f0ede6; }
+html.dark .theme-toggle { background: #262421; border-color: #45423d; color: #e6e1d8; }
+html.dark .theme-toggle:hover { background: #322f2b; border-color: #6d685f; }
+html.dark .home-tagline { color: #a09a90; }
+html.dark .home-avatar { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.45); }
+html.dark .prose blockquote { background: #211f1c; color: #cfc9c0; }
+html.dark .prose code { background: #2a2825; color: #e5e0d6; }
+html.dark .prose pre { background: #201f1c; border-color: #3a3732; }
+html.dark .search-box input[type="search"] { background: #23211f; color: var(--text); border-color: #4a463f; }
+html.dark .photo-cell { background: #262421; }
+html.dark .site-footer .corner::before,
+html.dark .site-footer .corner::after { background: #6e6960; }
+html.dark .head-corner::before,
+html.dark .head-corner::after { background: #d9d4ca; }
+html.dark .header-inner { border-bottom-color: #8a867e; }
+html.dark ::selection { background: #4d4942; }
 
 /* ===== 手机适配 ===== */
 @media (max-width: 640px) {

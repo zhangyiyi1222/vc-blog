@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ block "title" . }}{{ if not .IsHome }}{{ with .Title }}{{ . }} · {{ end }}{{ end }}{{ site.Title }}{{ end }}</title>
   <meta name="description" content="{{ .Description | default site.Params.description | plainify }}">
+  <script>
+    (function () {
+      var s = null;
+      try { s = localStorage.getItem('blog-theme'); } catch (e) {}
+      var dark = s === 'dark' || (s !== 'light' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (dark) document.documentElement.classList.add('dark');
+    })();
+  </script>
   <link rel="stylesheet" href="{{ "css/main.css" | relURL }}?v={{ site.Params.cssv }}">
   <link rel="icon" type="image/png" href="{{ "img/icon-32.png" | relURL }}">
   <link rel="apple-touch-icon" href="{{ "img/apple-touch-icon.png" | relURL }}">
@@ -50,6 +58,6 @@
     </div>
   </footer>
   {{ block "footer" . }}{{ end }}
-  <script src="{{ "js/theme.js" | relURL }}" defer></script>
+  <script src="{{ "js/theme.js?v=20260908n" | relURL }}" defer></script>
 </body>
 </html>
