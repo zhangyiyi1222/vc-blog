@@ -3,7 +3,7 @@ title: "你必须学会被别人误解"
 date: 2026-09-16T12:00:00+08:00
 themes:
   - 生长
-study: true
+study: false
 draft: false
 ---
 
