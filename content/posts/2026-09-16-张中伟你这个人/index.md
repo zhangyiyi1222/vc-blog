@@ -3,7 +3,7 @@ title: "张中伟你这个人"
 date: 2026-09-16T12:00:00+08:00
 themes:
   - 生长
-study: false
+study: true
 draft: false
 ---
 
