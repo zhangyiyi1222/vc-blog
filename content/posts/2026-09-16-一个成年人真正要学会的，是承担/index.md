@@ -1,6 +1,9 @@
 ---
 title: "一个成年人真正要学会的，是承担"
 date: 2026-09-16T12:00:00+08:00
+themes:
+  - 生长
+study: true
 draft: false
 ---
 
