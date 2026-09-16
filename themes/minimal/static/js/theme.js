@@ -5,19 +5,12 @@
 (function () {
   'use strict';
   const btn = document.getElementById('theme-toggle');
-  const icon = document.getElementById('theme-icon');
-  if (!btn || !icon) return;
+  if (!btn) return;
 
   const KEY = 'blog-theme';
 
   function apply(theme) {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      icon.textContent = '☀';
-    } else {
-      document.documentElement.classList.remove('dark');
-      icon.textContent = '☾';
-    }
+    document.documentElement.classList.toggle('dark', theme === 'dark');
     try { localStorage.setItem(KEY, theme); } catch (e) { /* 忽略 */ }
   }
 

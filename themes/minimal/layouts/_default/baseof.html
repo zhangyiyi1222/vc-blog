@@ -46,12 +46,12 @@
 <body{{ if .IsHome }} class="is-home"{{ end }}>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="site-brand" href="{{ site.Home.RelPermalink }}">
-        {{- with site.Params.avatar -}}
-        <img class="site-avatar" src="{{ . | relURL }}" alt="" width="40" height="40">
-        {{- end -}}
-        <span class="site-brand-name">{{ site.Title }}</span>
-      </a>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换日间/夜间模式" title="切换日间/夜间">
+        <span class="theme-icon" aria-hidden="true">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 14.3A8.5 8.5 0 1 1 9.7 3.6a6.9 6.9 0 0 0 10.7 10.7z"></path></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.1"></circle><path d="M12 2.8v2.1M12 19.1v2.1M2.8 12h2.1M19.1 12h2.1M5.5 5.5l1.5 1.5M17 17l1.5 1.5M18.5 5.5L17 7M7 17l-1.5 1.5"></path></svg>
+        </span>
+      </button>
       <div class="header-right">
       <nav class="site-nav" aria-label="主导航">
         {{- $current := .RelPermalink -}}
@@ -67,9 +67,6 @@
       </nav>
         <button type="button" id="search-open" class="theme-toggle search-toggle" aria-label="搜索文章" title="搜索">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"></circle><path d="M15 15l5 5"></path></svg>
-        </button>
-        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换日间/夜间模式" title="切换日间/夜间">
-          <span id="theme-icon" class="theme-icon" aria-hidden="true">☾</span>
         </button>
       </div>
     </div>
@@ -99,7 +96,7 @@
       <ul class="search-overlay-results" id="search-overlay-results"></ul>
     </div>
   </div>
-  <script src="{{ "js/theme.js?v=20260908n" | relURL }}" defer></script>
+  <script src="{{ "js/theme.js?v=20260916c" | relURL }}" defer></script>
   <script src="{{ "js/search-overlay.js?v=20260916a" | relURL }}" defer></script>
 </body>
 </html>
