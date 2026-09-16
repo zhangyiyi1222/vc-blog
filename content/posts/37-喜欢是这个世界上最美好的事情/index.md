@@ -1,8 +1,8 @@
 ---
 title: "喜欢是这个世界上最美好的事情"
 date: 2026-03-27T09:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 （日期待确认）

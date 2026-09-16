@@ -1,8 +1,8 @@
 ---
 title: "《别再学 AI 工具了，先想办法收第一笔钱》"
 date: 2026-09-13T12:00:00+08:00
-categories:
-  - 一人公司
+themes:
+  - 谋生
 draft: false
 ---
 

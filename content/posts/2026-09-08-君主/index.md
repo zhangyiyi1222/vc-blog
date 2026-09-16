@@ -1,8 +1,8 @@
 ---
 title: "君主"
 date: 2026-09-08T12:00:00+08:00
-categories:
-  - 思考
+themes:
+  - 生长
 draft: false
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: "摘抄与随感"
 date: 2026-04-01T09:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 （日期待确认）

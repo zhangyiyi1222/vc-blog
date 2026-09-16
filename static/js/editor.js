@@ -14,8 +14,14 @@
   const tokenBtn = document.getElementById('tokenBtn');
   const titleEl = document.getElementById('title');
   const dateEl = document.getElementById('date');
-  const categoryEl = document.getElementById('category');
-  const newCategoryEl = document.getElementById('newCategory');
+  const themeBoxEl = document.getElementById('themeBox');
+  const postFilterEl = document.getElementById('postFilter');
+  const postPagerEl = document.getElementById('postPager');
+  const studyFlagEl = document.getElementById('studyFlag');
+  let allRows = [];
+  let filteredRows = [];
+  let logsPage = 1;
+  const LOGS_PER_PAGE = 30;
   const bodyEl = document.getElementById('body');
   const filesEl = document.getElementById('files');
   const fileListEl = document.getElementById('fileList');
@@ -35,7 +41,7 @@
   let tree = [];
   let logsScrollY = 0;
   let selectedFiles = [];
-  let placedMedia = 0;
+  let mediaUid = 0;
   let homeConfig = { photos: [] };
   let homeConfigSha = null;
 
@@ -126,7 +132,8 @@
     const lines = raw.replace(/\r\n/g, '\n').split('\n');
     let i = 0;
     if (lines[0].trim() === '---') i = 1;
-    let title = '', date = '', category = '';
+    let title = '', date = '', study = false;
+    const themes = [];
     let bodyStart = 0;
     for (; i < lines.length; i++) {
       if (lines[i].trim() === '---') { bodyStart = i + 1; break; }
@@ -135,35 +142,53 @@
       if (t) title = t[1];
       const d = line.match(/^date:\s*(\S+)/);
       if (d) date = d[1].slice(0, 10);
-      if (/^categories:/.test(line)) { while (i + 1 < lines.length && /^\s+-\s*/.test(lines[i + 1])) { i++; category = lines[i].replace(/^\s+-\s*/, '').trim(); } }
+      if (/^study:\s*true/.test(line)) study = true;
+      if (/^themes:/.test(line)) { while (i + 1 < lines.length && /^\s+-\s*/.test(lines[i + 1])) { i++; themes.push(lines[i].replace(/^\s+-\s*/, '').trim()); } }
     }
     const body = lines.slice(bodyStart).join('\n').trim();
-    return { title: title, date: date, category: category, body: body };
+    return { title: title, date: date, themes: themes, study: study, body: body };
   }
 
-  function buildMarkdown(title, date, category, body, mediaLines) {
+  function buildMarkdown(title, date, themes, body, mediaLines, study) {
+    const list = themes && themes.length ? themes : [];
     return '---\n' +
       'title: "' + title.replace(/"/g, '“') + '"\n' +
       'date: ' + dateTimeString(new Date(date + 'T12:00:00+08:00')) + '\n' +
-      (category ? 'categories:\n' + '  - ' + category + '\n' : '') +
+      (list.length ? 'themes:\n' + list.map(function (t) { return '  - ' + t; }).join('\n') + '\n' : '') +
+      (study ? 'study: true\n' : '') +
       'draft: false\n' +
       '---\n\n' + body + '\n' +
       (mediaLines.length ? '\n' + mediaLines.join('\n\n') + '\n' : '');
   }
 
   function resetForm() {
-    titleEl.value = ''; bodyEl.value = ''; filesEl.value = ''; fileListEl.textContent = ''; selectedFiles = []; placedMedia = 0;
+    titleEl.value = ''; bodyEl.value = ''; filesEl.value = ''; fileListEl.textContent = ''; selectedFiles = [];
+    if (studyFlagEl) studyFlagEl.checked = false;
     dateEl.value = new Date().toISOString().slice(0, 10);
     editing = null;
     publishBtn.textContent = '发布';
     cancelBtn.hidden = true;
+    setThemeChecks([]);
+  }
+
+  function getCheckedThemes() {
+    if (!themeBoxEl) return [];
+    return Array.prototype.slice.call(themeBoxEl.querySelectorAll('input:checked')).map(function (i) { return i.value; });
+  }
+
+  function setThemeChecks(list) {
+    if (!themeBoxEl) return;
+    const picked = list || [];
+    Array.prototype.forEach.call(themeBoxEl.querySelectorAll('input'), function (i) {
+      i.checked = picked.indexOf(i.value) >= 0;
+    });
   }
 
   // ---------- 上传新文章 ----------
   publishBtn.addEventListener('click', async function () {
     const t = token();
     const title = titleEl.value.trim();
-    const category = newCategoryEl.value.trim() || categoryEl.value.trim();
+    const themes = getCheckedThemes();
     const body = bodyEl.value.trim();
     const date = dateEl.value;
     if (!t) { setStatus('请先填写 GitHub 令牌'); return; }
@@ -174,7 +199,7 @@
     if (editing && editing.mode === 'about') {
       publishBtn.disabled = true;
       try {
-        const md = buildMarkdown(title, date, '', body, []);
+        const md = buildMarkdown(title, date, [], body, []);
         await githubPut(editing.path, md, '修改关于页', false, editing.sha);
         setStatus('关于页已保存', 'ok');
         loadPosts(true);
@@ -196,38 +221,43 @@
       return;
     }
     const folder = editing ? editing.folder : 'content/posts/' + date + '-' + safeTitle(title);
-    if (editing && editing.single && selectedFiles.length) { setStatus('这篇旧格式单文件不能加图：请先删除旧文，再新建一篇发图', 'err'); return; }
+    const convertToFolder = !!(editing && editing.single && selectedFiles.length);
     const message = (editing ? '修改：' : '发布：') + title;
-    const files = selectedFiles.slice();
+    const mediaItems = selectedFiles.slice();
     const mediaLines = [];
     publishBtn.disabled = true;
 
     try {
       let finalBody = body;
       const tailMedia = [];
-      for (let i = 0; i < files.length; i++) {
-        const f = files[i];
+      for (let i = 0; i < mediaItems.length; i++) {
+        const f = mediaItems[i].file;
         if (f.size > 25 * 1024 * 1024) throw new Error(f.name + ' 超过 25MB');
-        setStatus('上传 ' + (i + 1) + '/' + files.length + '…');
+        setStatus('上传 ' + (i + 1) + '/' + mediaItems.length + '…');
         const data = await readAsDataURL(f);
         const name = 'media-' + Date.now() + '-' + (i + 1) + '.' + fileExt(f.name);
         await githubPut(folder + '/' + name, data.split(',')[1], message, true);
         const line = f.type.indexOf('video') === 0
           ? '{{< video src="' + name + '" >}}'
           : '![' + title + '](' + name + ')';
-        const token = '[[IMG-' + (i + 1) + ']]';
-        if (finalBody.indexOf(token) >= 0) {
-          finalBody = finalBody.replace(token, line);
+        if (finalBody.indexOf(mediaItems[i].token) >= 0) {
+          finalBody = finalBody.replace(mediaItems[i].token, line);
         } else {
           tailMedia.push(line);
         }
       }
       setStatus('写入文章…');
-      if (/\[\[IMG-\d+\]\]/.test(finalBody)) throw new Error('还有未对应文件的图片占位符，请补选图片或删除 [[IMG-x]]');
+      finalBody = finalBody.replace(/\n*\[\[IMG-\d+\]\]\n*/g, '\n');
       const finalText = finalBody + (tailMedia.length ? '\n\n' + tailMedia.join('\n\n') + '\n' : '');
-      const md = buildMarkdown(title, date, category, finalText, []);
-      const mdPath = editing ? (editing.mdPath || folder + '/index.md') : folder + '/index.md';
-      await githubPut(mdPath, md, message, false, editing && editing.sha);
+      const md = buildMarkdown(title, date, themes, finalText, [], !!(studyFlagEl && studyFlagEl.checked));
+      if (convertToFolder) {
+        // 老格式的单独文件要加图：改写进文件夹，再删掉原来那个单文件（网址不变）
+        await githubPut(folder + '/index.md', md, message, false);
+        await githubDelete(editing.path, editing.sha);
+      } else {
+        const mdPath = editing ? (editing.mdPath || folder + '/index.md') : folder + '/index.md';
+        await githubPut(mdPath, md, message, false, editing && editing.sha);
+      }
       setStatus('成功！约 1 分钟后更新。', 'ok');
       if (editing) {
         resetForm();
@@ -261,7 +291,6 @@
     return false;
   }
 
-  async function loadPosts(quiet) {
   function skeletonRows(n) {
     var html = '';
     for (var i = 0; i < n; i++) {
@@ -273,9 +302,11 @@
     }
     return html;
   }
+  async function loadPosts(quiet) {
     if (!token()) { postListEl.innerHTML = '<li style="color:#b3261e;">未检测到令牌：请到“关于”页底部保存令牌后再点日志</li>'; return; }
     if (tokenManage) tokenManage.style.display = 'none';
     postListEl.innerHTML = skeletonRows(8);
+    if (postFilterEl) postFilterEl.value = '';
     if (!quiet) setStatus2('加载中…');
     try {
       tree = (await apiGet('git/trees/main?recursive=1')).tree || [];
@@ -288,7 +319,7 @@
         const fallback = b.path.split('/').pop() === 'index.md'
           ? b.path.slice('content/posts/'.length, -'/index.md'.length)
           : b.path.slice('content/posts/'.length, -'.md'.length);
-        return { b: b, date: m && m.date ? m.date : '', title: m && m.title ? m.title : fallback };
+        return { b: b, date: m && m.date ? m.date : '', title: m && m.title ? m.title : fallback, study: !!(m && m.study) };
       });
       rows.sort(function (x, y) {
         if (!x.date && !y.date) return y.b.path.localeCompare(x.b.path);
@@ -296,39 +327,136 @@
         if (!y.date) return -1;
         return y.date.localeCompare(x.date);
       });
-      rows.forEach(function (row) {
-        const li = document.createElement('li');
-        const top = document.createElement('div');
-        top.className = 'p-row';
-        const dt = document.createElement('span');
-        dt.className = 'p-date';
-        dt.textContent = row.date || '日期待补';
-        const btns = document.createElement('span');
-        btns.className = 'p-btns';
-        const edit = document.createElement('button');
-        edit.textContent = '编辑';
-        edit.addEventListener('click', function () { startEdit(row.b); });
-        const del = document.createElement('button');
-        del.textContent = '删除';
-        del.style.borderColor = '#d9a0a0';
-        del.addEventListener('click', function () { removePost(row.b); });
-        btns.appendChild(edit);
-        btns.appendChild(del);
-        top.appendChild(dt);
-        top.appendChild(btns);
-        const a = document.createElement('a');
-        a.textContent = row.title;
-        a.href = 'https://zhangzhongwei.top' + postPathToUrl(row.b.path);
-        a.target = '_blank';
-        li.appendChild(top);
-        li.appendChild(a);
-        postListEl.appendChild(li);
-      });
+      allRows = rows;
+      filteredRows = rows;
+      logsPage = 1;
+      renderLogsPage();
       setStatus2(meta ? '共 ' + rows.length + ' 篇，按日期从新到旧' : '共 ' + rows.length + ' 篇（索引未取到，按名称排）');
       if (tokenManage) tokenManage.style.display = '';
     } catch (err) { if (tokenManage) tokenManage.style.display = ''; setStatus2('加载失败：' + err.message, 'err'); }
   }
 
+  function renderLogsPage() {
+    postListEl.innerHTML = '';
+    const total = filteredRows.length;
+    const totalPages = Math.max(1, Math.ceil(total / LOGS_PER_PAGE));
+    if (logsPage > totalPages) logsPage = totalPages;
+    const start = (logsPage - 1) * LOGS_PER_PAGE;
+    filteredRows.slice(start, start + LOGS_PER_PAGE).forEach(function (row) {
+      const li = document.createElement('li');
+      const top = document.createElement('div');
+      top.className = 'p-row';
+      const dt = document.createElement('span');
+      dt.className = 'p-date';
+      dt.textContent = row.date || '日期待补';
+      const btns = document.createElement('span');
+      btns.className = 'p-btns';
+      const fav = document.createElement('button');
+      fav.textContent = row.study ? '已精选' : '精选';
+      if (row.study) fav.className = 'on';
+      fav.addEventListener('click', function () { toggleStudy(row.b, !row.study); });
+      const edit = document.createElement('button');
+      edit.textContent = '编辑';
+      edit.addEventListener('click', function () { startEdit(row.b); });
+      const del = document.createElement('button');
+      del.textContent = '删除';
+      del.style.borderColor = '#d9a0a0';
+      del.addEventListener('click', function () { removePost(row.b); });
+      btns.appendChild(fav);
+      btns.appendChild(edit);
+      btns.appendChild(del);
+      top.appendChild(dt);
+      top.appendChild(btns);
+      const a = document.createElement('a');
+      a.textContent = row.title;
+      a.href = 'https://zhangzhongwei.top' + postPathToUrl(row.b.path);
+      a.target = '_blank';
+      li.appendChild(top);
+      li.appendChild(a);
+      postListEl.appendChild(li);
+    });
+    renderPostPager(totalPages, total);
+  }
+
+  function renderPostPager(totalPages, total) {
+    if (!postPagerEl) return;
+    postPagerEl.innerHTML = '';
+    if (totalPages <= 1) {
+      if (total) {
+        const info0 = document.createElement('span');
+        info0.className = 'page-info';
+        info0.textContent = '共 ' + total + ' 篇';
+        postPagerEl.appendChild(info0);
+      }
+      return;
+    }
+    function mkBtn(label, page, disabled) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      if (disabled) b.className = 'off';
+      else if (page === logsPage) b.className = 'on';
+      else b.addEventListener('click', function () { logsPage = page; renderLogsPage(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      return b;
+    }
+    postPagerEl.appendChild(mkBtn('上一页', logsPage - 1, logsPage <= 1));
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let p = 1; p <= totalPages; p++) pages.push(p);
+    } else {
+      pages.push(1);
+      if (logsPage > 3) pages.push('gap');
+      for (let p = Math.max(2, logsPage - 1); p <= Math.min(totalPages - 1, logsPage + 1); p++) pages.push(p);
+      if (logsPage < totalPages - 2) pages.push('gap');
+      pages.push(totalPages);
+    }
+    pages.forEach(function (p) {
+      if (p === 'gap') {
+        const s = document.createElement('span');
+        s.className = 'page-gap';
+        s.textContent = '…';
+        postPagerEl.appendChild(s);
+      } else {
+        postPagerEl.appendChild(mkBtn(String(p), p, false));
+      }
+    });
+    postPagerEl.appendChild(mkBtn('下一页', logsPage + 1, logsPage >= totalPages));
+    const info = document.createElement('span');
+    info.className = 'page-info';
+    info.textContent = '共 ' + total + ' 篇';
+    postPagerEl.appendChild(info);
+  }
+  async function toggleStudy(blob, on) {
+    if (!token()) { setStatus2('请先保存令牌', 'err'); return; }
+    setStatus2(on ? '正在加入功课…' : '正在移出功课…');
+    try {
+      const data = await apiGet('contents/' + encodePath(blob.path));
+      const raw = base64Decode(data.content);
+      const updated = setFrontMatterFlag(raw, 'study', on ? 'true' : 'false');
+      await githubPut(blob.path, updated, (on ? '加入功课：' : '移出功课：') + blob.path, false, data.sha);
+      setStatus2(on ? '已加入功课' : '已移出功课', 'ok');
+      await loadPosts(true);
+    } catch (err) {
+      setStatus2('操作失败：' + err.message, 'err');
+    }
+  }
+
+  function setFrontMatterFlag(raw, key, value) {
+    const nl = raw.indexOf('\r\n') >= 0 ? '\r\n' : '\n';
+    const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(raw);
+    if (!m) return raw;
+    let fm = m[1];
+    const rest = raw.slice(m[0].length);
+    const re = new RegExp('^' + key + ':\\s*.*$', 'm');
+    if (re.test(fm)) {
+      fm = fm.replace(re, key + ': ' + value);
+    } else if (/^draft:\s*/m.test(fm)) {
+      fm = fm.replace(/^draft:\s*/m, key + ': ' + value + nl + 'draft: ');
+    } else {
+      fm = fm + nl + key + ': ' + value;
+    }
+    return '---' + nl + fm + nl + '---' + rest;
+  }
   async function fetchPostMeta() {
     try {
       const res = await fetch('./index.json', { cache: 'no-cache' });
@@ -337,10 +465,10 @@
       const meta = new Map();
       if (Array.isArray(arr)) {
         arr.forEach(function (e) {
-          var p = String(e.path || '');
+          var p = String(e.path || '').replace(/\\/g, '/');
           if (!p) return;
           if (p.indexOf('content/') !== 0) p = 'content/' + p;
-          meta.set(p, { date: String(e.date || '').slice(0, 10), title: String(e.title || '') });
+          meta.set(p, { date: String(e.date || '').slice(0, 10), title: String(e.title || ''), study: !!(e.study) });
         });
       }
       return meta;
@@ -365,17 +493,14 @@
       const fm = parseFrontMatter(raw);
       titleEl.value = fm.title;
       dateEl.value = fm.date;
-      if (fm.category) {
-        if (!Array.prototype.some.call(categoryEl.options, function (o) { return o.value === fm.category; })) {
-          const o = document.createElement('option'); o.value = fm.category; o.textContent = fm.category; categoryEl.appendChild(o);
-        }
-        categoryEl.value = fm.category;
-      }
+      setThemeChecks(fm.themes);
+      if (studyFlagEl) studyFlagEl.checked = !!fm.study;
       bodyEl.value = fm.body;
       const isSingle = !blob.path.endsWith('/index.md');
       editing = {
         path: blob.path, sha: data.sha, mode: blob.path === 'content/about.md' ? 'about' : 'post',
         single: isSingle,
+        study: fm.study,
         mdPath: isSingle ? blob.path : blob.path.slice(0, -'/index.md'.length) + '/index.md',
         folder: isSingle ? blob.path.slice(0, -'.md'.length) : blob.path.slice(0, -'/index.md'.length)
       };
@@ -424,39 +549,78 @@
   }
 
   filesEl.addEventListener('change', function () {
+    const before = selectedFiles.length;
     for (let i = 0; i < filesEl.files.length; i++) {
-      selectedFiles.push(filesEl.files[i]);
+      mediaUid++;
+      selectedFiles.push({ file: filesEl.files[i], token: '[[IMG-' + mediaUid + ']]' });
     }
     filesEl.value = '';
+    for (let i = before; i < selectedFiles.length; i++) {
+      insertAtCursor(selectedFiles[i].token);
+    }
     renderFiles();
+    if (selectedFiles.length > before) {
+      setStatus('已加入 ' + (selectedFiles.length - before) + ' 个文件，位置已写进正文（可剪切调整）');
+    }
   });
 
   function renderFiles() {
     fileListEl.innerHTML = '';
-    selectedFiles.forEach(function (f, idx) {
-      const s = document.createElement('span');
-      s.style.display = 'inline-block';
-      s.style.marginRight = '8px';
-      s.textContent = (idx + 1) + '. ' + f.name + '（' + Math.round(f.size / 1024) + ' KB）';
+    selectedFiles.forEach(function (item, idx) {
+      const f = item.file;
+      const row = document.createElement('div');
+      row.className = 'file-row';
+      if (f.type.indexOf('image') === 0) {
+        const img = document.createElement('img');
+        img.className = 'file-thumb';
+        const url = URL.createObjectURL(f);
+        img.src = url;
+        img.onload = function () { URL.revokeObjectURL(url); };
+        row.appendChild(img);
+      } else {
+        const tag = document.createElement('span');
+        tag.className = 'file-thumb file-thumb-video';
+        tag.textContent = '视频';
+        row.appendChild(tag);
+      }
+      const name = document.createElement('span');
+      name.className = 'file-name';
+      name.textContent = (idx + 1) + '. ' + f.name + '（' + Math.round(f.size / 1024) + ' KB）';
+      row.appendChild(name);
       const rm = document.createElement('button');
       rm.type = 'button';
+      rm.className = 'file-remove';
       rm.textContent = '移除';
-      rm.style.fontSize = '.75rem';
-      rm.addEventListener('click', function () { selectedFiles.splice(idx, 1); if (placedMedia > selectedFiles.length) placedMedia = selectedFiles.length; renderFiles(); });
-      s.appendChild(rm);
-      fileListEl.appendChild(s);
+      rm.addEventListener('click', function () { removeFileAt(idx); });
+      row.appendChild(rm);
+      fileListEl.appendChild(row);
     });
   }
 
+  function removeFileAt(idx) {
+    const item = selectedFiles[idx];
+    if (!item) return;
+    selectedFiles.splice(idx, 1);
+    bodyEl.value = bodyEl.value.split(item.token).join('');
+    bodyEl.value = bodyEl.value.replace(/\n{3,}/g, '\n\n');
+    renderFiles();
+    setStatus('已移除，正文里的位置标记也一起删掉了');
+  }
+
   function insertAtCursor(text) {
-    const pos = bodyEl.selectionStart == null ? bodyEl.value.length : bodyEl.selectionStart;
-    const end = bodyEl.selectionEnd == null ? pos : bodyEl.selectionEnd;
+    const focused = document.activeElement === bodyEl;
+    const len = bodyEl.value.length;
+    const pos = focused && bodyEl.selectionStart != null ? bodyEl.selectionStart : len;
+    const end = focused && bodyEl.selectionEnd != null ? bodyEl.selectionEnd : pos;
     const before = bodyEl.value.slice(0, pos);
     const after = bodyEl.value.slice(end);
     const lead = before && !before.endsWith('\n') ? '\n\n' : '\n';
     const trail = after && !after.startsWith('\n') ? '\n' : '';
-    bodyEl.value = before + lead + text + trail + after;
+    const inserted = lead + text + trail;
+    bodyEl.value = before + inserted + after;
+    const caret = pos + inserted.length;
     bodyEl.focus();
+    try { bodyEl.setSelectionRange(caret, caret); } catch (e) {}
   }
 
   const quoteBtn = document.getElementById('quoteBtn');
@@ -466,10 +630,12 @@
 
   const mediaBtn = document.getElementById('mediaBtn');
   if (mediaBtn) mediaBtn.addEventListener('click', function () {
-    if (placedMedia >= selectedFiles.length) { setStatus('没有待插入的文件：先选图片/视频，再点这里', 'err'); return; }
-    insertAtCursor('[[IMG-' + (placedMedia + 1) + ']]');
-    placedMedia++;
-    setStatus('已插入第 ' + placedMedia + ' 个图片占位符');
+    if (!selectedFiles.length) { setStatus('还没有选择图片或视频', 'err'); return; }
+    let n = 0;
+    selectedFiles.forEach(function (item) {
+      if (bodyEl.value.indexOf(item.token) < 0) { insertAtCursor(item.token); n++; }
+    });
+    setStatus(n ? '已补上 ' + n + ' 个位置标记' : '所有文件都已经在正文里了');
   });
   const moduleHint = document.getElementById('moduleHint');
   const aboutPanel = document.getElementById('aboutPanel');
@@ -575,6 +741,7 @@
     managePanel.hidden = false;
     homePanel.hidden = true;
     aboutPanel.hidden = true;
+    postListEl.innerHTML = skeletonRows(10);
     setWriteVisible(false);
     document.querySelectorAll('#moduleNav button').forEach(function (b) { b.classList.remove('active'); });
     const lb = document.querySelector('#moduleNav button[data-module="logs"]');
@@ -603,11 +770,30 @@
         setStatus('未检测到令牌', 'err');
         return;
       }
-      if (m === 'logs') { logsScrollY = 0; setWriteVisible(false); managePanel.hidden = false; await loadPosts(true); moduleHint.textContent = '编辑或删除旧文'; window.scrollTo(0, 0); return; }
+      if (m === 'logs') {
+        logsScrollY = 0;
+        managePanel.hidden = false;
+        postListEl.innerHTML = skeletonRows(10);
+        setWriteVisible(false);
+        await loadPosts(true);
+        moduleHint.textContent = '编辑或删除旧文';
+        window.scrollTo(0, 0);
+        return;
+      }
       if (m === 'home') { setWriteVisible(false); homePanel.hidden = false; moduleHint.textContent = '首页：改大字/小字/页脚，或管理相片。'; await loadHomePanel(); return; }
     });
   });
   if (tokenEl.value.trim()) { setWriteVisible(false); managePanel.hidden = true; moduleHint.textContent = '选择要管理的栏目：落笔、首页、日志、门类、关于。'; }
   const writeBtn = document.querySelector('#moduleNav button[data-module="write"]');
+  if (postFilterEl) {
+    postFilterEl.addEventListener('input', function () {
+      const q = postFilterEl.value.trim().toLowerCase();
+      filteredRows = q
+        ? allRows.filter(function (r) { return (r.title + ' ' + r.date + ' ' + r.b.path).toLowerCase().indexOf(q) >= 0; })
+        : allRows;
+      logsPage = 1;
+      renderLogsPage();
+    });
+  }
   if (writeBtn) writeBtn.click();
 })();

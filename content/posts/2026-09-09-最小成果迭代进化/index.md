@@ -1,7 +1,7 @@
 ---
 title: "最小成果迭代进化"
 date: 2026-09-09T12:00:00+08:00
-categories:
+themes:
   - 技能
 draft: false
 ---

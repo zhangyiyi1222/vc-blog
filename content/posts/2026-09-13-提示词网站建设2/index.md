@@ -1,8 +1,8 @@
 ---
 title: "提示词网站建设2"
 date: 2026-09-13T12:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 

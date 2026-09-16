@@ -1,8 +1,8 @@
 ---
 title: "妈的一段录音"
 date: 2026-01-06T09:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 （日期待确认）

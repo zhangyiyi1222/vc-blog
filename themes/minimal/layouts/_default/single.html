@@ -9,7 +9,7 @@
       {{- with $author -}}<span class="author">{{ . }}</span>{{ end -}}
       {{- with $.Date -}}<span class="date"><time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006-01-02" }}</time></span>{{ end -}}
     </span>
-    {{- with .GetTerms "categories" -}}
+    {{- with .GetTerms "themes" -}}
     <span class="meta-right term">
       {{- range . -}}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end -}}
     </span>

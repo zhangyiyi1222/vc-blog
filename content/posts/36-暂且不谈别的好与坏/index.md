@@ -1,8 +1,8 @@
 ---
 title: "暂且不谈别的好与坏"
 date: 2026-03-22T09:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 （日期待确认）

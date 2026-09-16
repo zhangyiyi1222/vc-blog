@@ -18,6 +18,30 @@
   <link rel="apple-touch-icon" href="{{ "img/site-icon-180.png" | relURL }}">
   <link rel="manifest" href="{{ "site.webmanifest" | relURL }}">
   {{ block "head" . }}{{ end }}
+  {{- $needMath := false -}}
+  {{- if .Params.math -}}{{- $needMath = true -}}{{- end -}}
+  {{- if and (not $needMath) .RawContent -}}
+    {{- if strings.Contains .RawContent "$" -}}{{- $needMath = true -}}{{- end -}}
+  {{- end -}}
+  {{- if $needMath -}}
+  <link rel="stylesheet" href="{{ "katex/katex.min.css" | relURL }}">
+  <script src="{{ "katex/katex.min.js" | relURL }}" defer></script>
+  <script src="{{ "katex/auto-render.min.js" | relURL }}" defer></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (!window.renderMathInElement) return;
+      renderMathInElement(document.querySelector('.prose') || document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+  {{- end -}}
 </head>
 <body{{ if .IsHome }} class="is-home"{{ end }}>
   <header class="site-header">
@@ -41,6 +65,9 @@
           <a class="nav-link{{ if $active }} active{{ end }}" href="{{ .URL | relURL }}">{{ .Name }}</a>
         {{- end -}}
       </nav>
+        <button type="button" id="search-open" class="theme-toggle search-toggle" aria-label="搜索文章" title="搜索">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"></circle><path d="M15 15l5 5"></path></svg>
+        </button>
         <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换日间/夜间模式" title="切换日间/夜间">
           <span id="theme-icon" class="theme-icon" aria-hidden="true">☾</span>
         </button>
@@ -59,6 +86,20 @@
     </div>
   </footer>
   {{ block "footer" . }}{{ end }}
+  <div id="search-overlay" class="search-overlay" hidden
+       data-index-url="{{ "index.json" | relURL }}"
+       data-fuse-url="{{ "js/fuse.min.js" | relURL }}">
+    <div class="search-overlay-mask" data-search-close></div>
+    <div class="search-overlay-panel" role="dialog" aria-modal="true" aria-label="搜索文章">
+      <div class="search-overlay-bar">
+        <input type="search" id="search-overlay-input" placeholder="搜索文章…" autocomplete="off" aria-label="搜索文章">
+        <button type="button" class="search-overlay-close" data-search-close aria-label="关闭搜索">✕</button>
+      </div>
+      <p class="search-overlay-status" id="search-overlay-status"></p>
+      <ul class="search-overlay-results" id="search-overlay-results"></ul>
+    </div>
+  </div>
   <script src="{{ "js/theme.js?v=20260908n" | relURL }}" defer></script>
+  <script src="{{ "js/search-overlay.js?v=20260916a" | relURL }}" defer></script>
 </body>
 </html>

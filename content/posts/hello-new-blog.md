@@ -1,7 +1,7 @@
 ---
 title: "你好，新博客"
 date: 2026-09-05T12:00:00+08:00
-categories:
+themes:
   - 生活
 draft: false
 ---

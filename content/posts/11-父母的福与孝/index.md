@@ -1,8 +1,8 @@
 ---
 title: "父母的福与孝"
 date: 2013-08-03T00:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 

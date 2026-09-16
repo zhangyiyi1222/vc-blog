@@ -13,19 +13,21 @@ enableEmoji = true
 buildFuture = true  # 允许日期稍晚的文章也显示，避免误以为没发布
 
 # ===== 分类 =====
-# 只用“分类”一种归类方式，不启用标签
+# ===== 主题 =====
+# 主题固定七个（名称与说明见 data/themes.json），一篇文章可属于多个主题。
+# 使用 themes 字段，例如：themes: [生长, 复盘]
 [taxonomies]
-  category = "categories"
+  theme = "themes"
 
 # ===== 站点参数 =====
 [params]
   description = "记录日常思考、读书笔记与生活片段的地方"
-  cssv = "20260908n"   # 每次改样式后手动+1，浏览器就会自动换新样式
+  cssv = "20260916b"   # 每次改样式后手动+1，浏览器就会自动换新样式
   author = "张中伟"   # 文章标题下方的署名
   avatar = "/img/avatar.jpg"   # 顶栏左侧的小图，换成你自己的头像时覆盖此文件即可
   homepageSize = 8   # 首页默认展示最近几篇文章
 
-# ===== 主导航：首页 | 日志 | 分类 | 搜索 | 关于 =====
+# ===== 主导航：首页 | 日志 | 功课 | 主题 | 关于（搜索为图标） =====
 [menu]
 
 [[menu.main]]
@@ -39,18 +41,19 @@ buildFuture = true  # 允许日期稍晚的文章也显示，避免误以为没�
   weight = 2
 
 [[menu.main]]
-  name = "分类"
-  url = "/categories/"
+  name = "功课"
+  url = "/study/"
   weight = 3
+
 [[menu.main]]
-  name = "搜索"
-  url = "/search/"
-  weight = 5
+  name = "主题"
+  url = "/themes/"
+  weight = 4
 
 [[menu.main]]
   name = "关于"
   url = "/about/"
-  weight = 6
+  weight = 5
 
 # ===== 首页额外输出 index.json（站内搜索的索引文件） =====
 [outputs]
@@ -67,3 +70,11 @@ buildFuture = true  # 允许日期稍晚的文章也显示，避免误以为没�
   baseName = "index"
   isPlainText = true
   notAlternative = true
+
+# ===== Markdown 扩展：直通数学公式，交给 KaTeX 渲染 =====
+[markup.goldmark.extensions.passthrough]
+  enable = true
+
+[markup.goldmark.extensions.passthrough.delimiters]
+  block = [['$$', '$$'], ['\[', '\]']]
+  inline = [['$', '$'], ['\(', '\)']]

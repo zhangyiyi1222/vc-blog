@@ -1,0 +1,17 @@
+{{- /* 年月归档列表：接受一组页面（. 为 Pages），日志页与功课页共用。 */ -}}
+{{- $groups := .GroupByDate "2006" -}}
+{{- range $groups -}}
+<section class="archive-year">
+  <h2 class="archive-year-title">{{ .Key }}</h2>
+  {{- $months := .Pages.GroupByDate "2006-01" -}}
+  {{- range $months -}}
+  <section class="archive-month">
+    <ul class="archive-list">
+      {{- range .Pages -}}
+      <li class="archive-item"><span class="archive-date">{{ dateFormat "1月2日" .Date }}</span><a class="archive-title" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{- end -}}
+    </ul>
+  </section>
+  {{- end -}}
+</section>
+{{- end -}}

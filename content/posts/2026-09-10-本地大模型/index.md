@@ -1,8 +1,8 @@
 ---
 title: "本地大模型"
 date: 2026-09-10T12:00:00+08:00
-categories:
-  - 一人公司
+themes:
+  - 谋生
 draft: false
 ---
 

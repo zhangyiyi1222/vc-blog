@@ -1,0 +1,14 @@
+{{ define "title" }}功课 · {{ site.Title }}{{ end }}
+{{ define "pagehead" }}
+<header class="page-head container">
+  <h1 class="page-title">功课</h1>
+</header>
+{{ end }}
+{{ define "main" }}
+{{- $pages := where site.RegularPages "Params.study" true -}}
+{{- with $pages -}}
+  {{ partial "archive-list.html" . }}
+{{- else -}}
+  <p class="empty-note">还没有挑出来的文章。在后台的「日志」里点「精选」，就会出现在这里。</p>
+{{- end -}}
+{{ end }}

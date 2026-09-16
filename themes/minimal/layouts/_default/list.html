@@ -2,7 +2,7 @@
 {{ define "pagehead" }}
 {{- $heading := .Title -}}
 {{- if eq .Kind "taxonomy" -}}
-  {{- $heading = "分类" -}}
+  {{- $heading = "主题" -}}
 {{- else if eq .Section "posts" -}}
   {{- $heading = "日志" -}}
 {{- end -}}
@@ -12,40 +12,49 @@
 {{ end }}
 {{ define "main" }}
 {{- if eq .Kind "taxonomy" -}}
-  <ul class="taxonomy-list">
-    {{- range .Pages.ByTitle -}}
-    <li class="taxonomy-item">
-      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-      <span class="taxonomy-count">{{ len .Pages }} 篇</span>
+  <ul class="theme-list">
+    {{- range site.Data.themes.themes -}}
+    {{- $term := site.GetPage (printf "/themes/%s" .name) -}}
+    <li class="theme-item">
+      {{- if $term -}}
+      <details class="theme-block">
+        <summary class="theme-link">
+          <span class="theme-name">{{ .name }}</span>
+          <span class="theme-desc">{{ .desc }}</span>
+          <span class="theme-count">{{ len $term.Pages }} 篇</span>
+        </summary>
+        <ul class="theme-posts">
+          {{- range first 10 $term.Pages.ByDate.Reverse -}}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time></li>
+          {{- end -}}
+          {{- if gt (len $term.Pages) 10 -}}
+          <li class="theme-more"><a href="{{ $term.RelPermalink }}">查看全部 {{ len $term.Pages }} 篇 →</a></li>
+          {{- end -}}
+        </ul>
+      </details>
+      {{- else -}}
+      <div class="theme-link theme-empty">
+        <span class="theme-name">{{ .name }}</span>
+        <span class="theme-desc">{{ .desc }}</span>
+        <span class="theme-count">还没有文章</span>
+      </div>
+      {{- end -}}
     </li>
     {{- end -}}
   </ul>
 {{- else if eq .Kind "term" -}}
+  {{- $paginator := .Paginate .Pages 10 -}}
   <div class="post-list">
-    {{- range .Pages -}}
+    {{- range $paginator.Pages -}}
     <article class="post-row">
       <h2 class="post-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
       <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
     </article>
     {{- end -}}
   </div>
+  {{ partial "pagination.html" $paginator }}
 {{- else if eq .Section "posts" -}}
-  {{- $groups := .Pages.GroupByDate "2006" -}}
-  {{- range $groups -}}
-  <section class="archive-year">
-    <h2 class="archive-year-title">{{ .Key }}</h2>
-    {{- $months := .Pages.GroupByDate "2006-01" -}}
-    {{- range $months -}}
-    <section class="archive-month">
-      <ul class="archive-list">
-        {{- range .Pages -}}
-        <li class="archive-item"><span class="archive-date">{{ dateFormat "1月2日" .Date }}</span><a class="archive-title" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-        {{- end -}}
-      </ul>
-    </section>
-    {{- end -}}
-  </section>
-  {{- end -}}
+  {{ partial "archive-list.html" .Pages }}
 {{- else -}}
   <div class="post-list">
     {{- range .Pages -}}

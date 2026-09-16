@@ -1,8 +1,8 @@
 ---
 title: "假如我有一双翅膀"
 date: 2013-09-25T00:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 

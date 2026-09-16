@@ -1,9 +1,9 @@
 ---
 title: "梦想与现实"
 date: 2013-03-13T00:00:00+08:00
-categories:
-  - 亲
-  - 白日梦
+themes:
+  - 人间
+  - 生活
 draft: false
 ---
 

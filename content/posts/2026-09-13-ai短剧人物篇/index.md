@@ -1,8 +1,9 @@
 ---
 title: "ai短剧人物篇"
 date: 2026-09-13T12:00:00+08:00
-categories:
-  - 提示词wx
+themes:
+  - 技能
+  - 创造
 draft: false
 ---
 

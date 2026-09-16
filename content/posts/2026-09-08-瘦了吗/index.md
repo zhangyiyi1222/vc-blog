@@ -1,7 +1,7 @@
 ---
 title: "瘦了吗"
 date: 2026-09-08T12:00:00+08:00
-categories:
+themes:
   - 生活
 draft: false
 ---

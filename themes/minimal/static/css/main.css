@@ -1050,3 +1050,242 @@ html.dark ::selection { background: #4d4942; }
 
 
 }
+
+/* ===== 主题页（固定七个主题） ===== */
+.theme-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.theme-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.theme-link {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.theme-link:hover .theme-name { text-decoration: underline; }
+
+.theme-name {
+  flex-shrink: 0;
+  color: var(--title);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.theme-desc {
+  flex: 1;
+  color: #666666;
+  font-size: 0.92rem;
+}
+
+.theme-count {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+html.dark .theme-desc { color: #a8a29a; }
+
+/* 主题抽屉：点标题就地展开该主题的文章 */
+.theme-block > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.theme-block > summary::-webkit-details-marker { display: none; }
+
+.theme-block[open] > summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.theme-posts {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0 0.7rem 1.1rem;
+}
+
+.theme-posts li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0;
+}
+
+.theme-posts a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.theme-posts a:hover { text-decoration: underline; }
+
+.theme-posts time {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* 抽屉底的“查看全部” */
+.theme-more a {
+  color: var(--muted);
+  font-size: 0.86rem;
+  text-decoration: none;
+}
+
+.theme-more a:hover { text-decoration: underline; }
+
+/* 主题文章列表的翻页 */
+.pager {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 1.6rem;
+  font-size: 0.9rem;
+}
+
+.pager-link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.pager-link:hover { text-decoration: underline; }
+
+.pager-off { color: var(--muted); }
+
+.pager-info {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* 暂时没有文章的主题：不可点，安静地待着 */
+.theme-empty .theme-name {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* 功课页暂空时的提示 */
+.empty-note {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+/* ===== 搜索图标与浮层 ===== */
+.search-toggle svg { display: block; }
+
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.search-overlay[hidden] { display: none; }
+
+.search-overlay-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.search-overlay-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(640px, calc(100% - 28px));
+  max-height: 70vh;
+  margin-top: 12vh;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16);
+}
+
+.search-overlay-bar {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-overlay-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.search-overlay-close {
+  padding: 12px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.search-overlay-status {
+  margin: 0;
+  padding: 10px 16px 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.search-overlay-results {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 8px;
+  overflow-y: auto;
+}
+
+.search-overlay-results li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.62rem 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-overlay-results li:last-child { border-bottom: 0; }
+
+.search-overlay-results a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-overlay-results a:hover { text-decoration: underline; }
+
+.search-overlay-results time {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+html.search-open { overflow: hidden; }
+
+html.dark .search-overlay-mask { background: rgba(0, 0, 0, 0.5); }
+html.dark .search-overlay-panel { box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); }
+
+@media (max-width: 600px) {
+  .theme-link { flex-wrap: wrap; gap: 0.2rem 1rem; }
+  .theme-desc { flex: 1 1 100%; order: 3; }
+  .search-overlay-panel {
+    width: 100%;
+    max-height: 78vh;
+    margin-top: 8vh;
+  }
+}

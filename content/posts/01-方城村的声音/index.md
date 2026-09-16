@@ -1,8 +1,8 @@
 ---
 title: "方城村的声音"
 date: 2026-01-01T09:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 （日期待确认）

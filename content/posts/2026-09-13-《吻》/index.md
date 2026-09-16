@@ -1,8 +1,8 @@
 ---
 title: "《吻》"
 date: 2026-09-13T12:00:00+08:00
-categories:
-  - 名画
+themes:
+  - 创造
 draft: false
 ---
 

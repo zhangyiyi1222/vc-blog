@@ -11,7 +11,8 @@
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="css/main.css">
   <style>
-    .editor-wrap { max-width: 620px; margin: 0 auto; padding: 28px 20px 80px; }
+    .editor-wrap { width: 100%; max-width: 620px; margin: 0 auto; padding: 28px 20px 80px; }
+    html { overflow-y: scroll; }
     .editor-wrap { min-height: 90vh !important; }
     .editor-title { font-size: 1.4rem; margin: 0 0 4px; }
     .editor-note { color: #999; font-size: .85rem; margin: 0 0 22px; }
@@ -54,9 +55,24 @@
     #moduleNav button { flex: 1 1 0; min-width: 0; font-size: .88rem; padding: 9px 2px; white-space: nowrap; }
     #moduleNav button.active { background: #111; color: #fff; border-color: #111; }
     #fileList { white-space: normal; }
+    .file-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f2f2f2; }
+    .file-thumb { width: 56px; height: 56px; object-fit: cover; border: 1px solid #eee; flex-shrink: 0; background: #fafafa; }
+    .file-thumb-video { display: flex; align-items: center; justify-content: center; font-size: .75rem; color: #888; }
+    .file-name { flex: 1; min-width: 0; font-size: .82rem; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-remove { font: inherit; font-size: .78rem; border: 1px solid #ccc; background: #fff; padding: 4px 10px; flex-shrink: 0; }
     #confirmBox { display: flex; }
     button { touch-action: manipulation; -webkit-touch-callout: none; }
     #confirmBox[hidden] { display: none !important; }
+    .field .theme-box { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+    .field .theme-box label { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 0; font-size: .9rem; color: #333; }
+    #postList button.on { background: #111; border-color: #111; color: #fff; }
+    #managePanel { min-height: 60vh; }
+    .post-pager { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
+    .post-pager button { font: inherit; font-size: .8rem; border: 1px solid #ccc; background: #fff; padding: 4px 10px; cursor: pointer; }
+    .post-pager button.on { background: #111; border-color: #111; color: #fff; }
+    .post-pager button.off { color: #bbb; }
+    .post-pager .page-info { margin-left: auto; font-size: .78rem; color: #999; }
+    .post-pager .page-gap { color: #999; font-size: .8rem; }
   </style>
 </head>
 <body>
@@ -101,26 +117,33 @@
     </div>
 
     <div class="field">
-      <label for="category">分类</label>
-      <select id="category">
-        <option>亲</option>
-        <option>生活</option>
-        <option>白日梦</option>
-        <option>生长</option>
-        <option>思考</option>
-      </select>
-      <input type="text" id="newCategory" placeholder="或输入新分类，例如：朋友、读书" style="margin-top:6px;">
+      <label>主题（可多选）</label>
+      <div id="themeBox" class="theme-box">
+        <label><input type="checkbox" value="生长"> 生长</label>
+        <label><input type="checkbox" value="技能"> 技能</label>
+        <label><input type="checkbox" value="创造"> 创造</label>
+        <label><input type="checkbox" value="谋生"> 谋生</label>
+        <label><input type="checkbox" value="人间"> 人间</label>
+        <label><input type="checkbox" value="生活"> 生活</label>
+        <label><input type="checkbox" value="复盘"> 复盘</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label style="display:inline-flex;align-items:center;gap:6px;">
+        <input type="checkbox" id="studyFlag"> 放进「功课」（需要反复读的）
+      </label>
     </div>
 
     <div class="field">
       <label for="body">正文（空行分段）</label>
       <button type="button" class="btn" id="quoteBtn" style="margin-bottom:6px;font-size:.8rem;">＋ 插入一段引言</button>
-      <button type="button" class="btn" id="mediaBtn" style="margin-bottom:6px;font-size:.8rem;">在光标处插入所选图片/视频</button>
+      <button type="button" class="btn" id="mediaBtn" style="margin-bottom:6px;font-size:.8rem;">把没进正文的图片补到光标处</button>
       <textarea id="body" placeholder="想写点什么……"></textarea>
     </div>
 
     <div class="field">
-      <label for="files">图片 / 视频（可选，单文件建议小于 20MB）</label>
+      <label for="files">图片 / 视频（选完自动加进正文，单个建议小于 20MB）</label>
       <input type="file" id="files" accept="image/*,video/*" multiple>
       <div class="file-list" id="fileList"></div>
     </div>
@@ -129,7 +152,9 @@
     <button class="btn" id="cancelEdit" hidden type="button">取消编辑</button>
     <p class="status" id="status"></p>
     <div id="managePanel" hidden>
+      <input type="search" id="postFilter" placeholder="找文章：输入标题或日期" autocomplete="off" style="width:100%;box-sizing:border-box;font:inherit;color:#333;border:1px solid #ddd;padding:9px 12px;margin-bottom:10px;">
       <ul id="postList" style="list-style:none;padding:0;margin:0;"></ul>
+      <div id="postPager" class="post-pager"></div>
       <div id="tokenManage" style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;">
         <div><label>密钥（GitHub 令牌，可修改）</label><input type="text" id="aboutToken" style="width:100%;box-sizing:border-box;font:inherit;color:#333;border:1px solid #ddd;padding:9px 12px;"></div>
         <button class="btn" id="saveAboutToken" type="button" style="margin-top:6px;">保存密钥</button>
@@ -139,7 +164,7 @@
     <button class="btn" id="tokenBtn" hidden type="button">设置 / 修改令牌</button>
   </div>
 
-  <script src="js/editor.js?v=20260908u" defer></script>
+  <script src="js/editor.js?v=20260916c" defer></script>
   <div id="confirmBox" hidden style="position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.35);align-items:center;justify-content:center;">
     <div style="background:#fff;max-width:320px;width:88%;padding:20px;border:1px solid #ddd;box-shadow:0 8px 30px rgba(0,0,0,.2);">
       <p id="confirmMsg" style="margin:0 0 16px;line-height:1.6;font-size:.95rem;color:#333;"></p>

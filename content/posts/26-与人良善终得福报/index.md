@@ -1,8 +1,8 @@
 ---
 title: "与人良善终得福报"
 date: 2014-02-02T00:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 

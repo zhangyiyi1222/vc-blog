@@ -1,8 +1,8 @@
 ---
 title: "夕阳与云彩"
 date: 2013-06-26T00:00:00+08:00
-categories:
-  - 亲
+themes:
+  - 人间
 draft: false
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: "五年一遍"
 date: 2026-09-11T12:00:00+08:00
-categories:
-  - 思考
+themes:
+  - 谋生
 draft: false
 ---
 

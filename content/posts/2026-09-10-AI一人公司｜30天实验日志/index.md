@@ -1,8 +1,8 @@
 ---
 title: "一人公司"
 date: 2026-09-10T12:00:00+08:00
-categories:
-  - 一人公司
+themes:
+  - 谋生
 draft: false
 ---
 

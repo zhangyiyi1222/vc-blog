@@ -1,8 +1,8 @@
 ---
 title: "人物男"
 date: 2026-09-13T12:00:00+08:00
-categories:
-  - 提示词人物
+themes:
+  - 技能
 draft: false
 ---
 

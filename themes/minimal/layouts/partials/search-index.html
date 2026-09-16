@@ -1,7 +1,7 @@
 {{- $pages := where site.RegularPages "Section" "posts" -}}
 {{- $entries := slice -}}
 {{- range $pages -}}
-  {{- $entry := dict "title" .Title "date" (.Date.Format "2006-01-02") "url" .RelPermalink "content" (.Plain | plainify) "path" .File.Path -}}
+  {{- $entry := dict "title" .Title "date" (.Date.Format "2006-01-02") "url" .RelPermalink "content" (.Plain | plainify) "path" .File.Path "study" (.Params.study | default false) "themes" (.Params.themes | default (slice)) -}}
   {{- $entries = $entries | append $entry -}}
 {{- end -}}
 {{- $entries | jsonify | safeHTML -}}
